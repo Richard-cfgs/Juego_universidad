@@ -1,0 +1,31 @@
+d:\programacion\Juego universidad\Juego\bin\Debug\net8.0\Juego.exe
+d:\programacion\Juego universidad\Juego\bin\Debug\net8.0\Juego.deps.json
+d:\programacion\Juego universidad\Juego\bin\Debug\net8.0\Juego.runtimeconfig.json
+d:\programacion\Juego universidad\Juego\bin\Debug\net8.0\Juego.dll
+d:\programacion\Juego universidad\Juego\bin\Debug\net8.0\Juego.pdb
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.GeneratedMSBuildEditorConfig.editorconfig
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.AssemblyInfoInputs.cache
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.AssemblyInfo.cs
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.csproj.CoreCompileInputs.cache
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.dll
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\refint\Juego.dll
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.pdb
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\Juego.genruntimeconfig.cache
+d:\programacion\Juego universidad\Juego\obj\Debug\net8.0\ref\Juego.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Juego.exe
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Juego.deps.json
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Juego.runtimeconfig.json
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Juego.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Juego.pdb
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.GeneratedMSBuildEditorConfig.editorconfig
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.AssemblyInfoInputs.cache
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.AssemblyInfo.cs
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.CoreCompileInputs.cache
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.dll
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\refint\Juego.dll
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.pdb
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.genruntimeconfig.cache
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\ref\Juego.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Spectre.Console.dll
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.AssemblyReference.cache
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.Up2Date
