@@ -113,5 +113,13 @@ namespace Juego
                 if(Pcs.pcs[i].jugador == 0 && Pcs.pcs[i].jugador != jugador)Turnos.players[jugador].Add(i);
             }
         }
+        public static void continuar()
+        {
+            while(true)
+            {
+                ConsoleKeyInfo tecla = Console.ReadKey(true);
+                if(tecla.Key == ConsoleKey.Enter)return;
+            }
+        }
     }
 }

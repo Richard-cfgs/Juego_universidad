@@ -68,10 +68,9 @@ namespace Juego
                         }
                     }
                     pos_npcs[(npcs[i].posx,npcs[i].posy)].Add(i);
-                    Console.Clear();
-                    Compilar.compilar(0,0,0);
                 }
             }
+            Compilar.compilar(0,0,0);
         }
         public static void npcs_attack()
         {
@@ -94,23 +93,20 @@ namespace Juego
                         }
                     }
                 }
-                Console.Clear();
-                Compilar.compilar(0,0,0);
             }
         }
         private static void quitar_vida_npc(int x , int y , int id)
         {
-            if(Laberinto.mat[x,y] == 1)
+            if(Laberinto.verificar_pos(x,y) == 1)
             {
                 if(pos_npcs[(x,y)].Count != 0)
                 {
                     Compilar.inf("Has sido atacado por los guardianes" , "yellow");
                     Pcs.pcs[id].healthPoints -= fuerza*pos_npcs[(x,y)].Count;
                     Actualizar.revisar_muerto(id,true,-1);
-                    Console.Clear();
+                    Thread.Sleep(3000);
                     Compilar.compilar(1,x,y);
-                    Thread.Sleep(1000);
-                    Console.Clear();
+                    Thread.Sleep(3000);
                     Compilar.compilar(1,Pcs.pcs[id].posx,Pcs.pcs[id].posy);
                 }
             }

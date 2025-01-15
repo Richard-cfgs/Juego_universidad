@@ -6,6 +6,7 @@ namespace Juego
         public static int laberinto_ancho = 40;
         public static void compilar(int tipo, int x, int y)
         {
+            Console.Clear();
             Console.SetCursorPosition(0,0);
             for(int i=0 ; i<Laberinto.size ; i++)
             {
@@ -77,62 +78,74 @@ namespace Juego
             {
                 //Console.WriteLine($"{i} {Pcs.pcs_principales[Pcs.pcs[i].id]}");
                 Console.SetCursorPosition(inicio_x,inicio_y);
-                Console.WriteLine($"Jugador {i}:");
+                Console.Write($"Jugador {i} - Héroes: ");
                 foreach(int id in Turnos.players[i])
                 {
-                    if(Pcs.pcs_principales[id] == false)continue;
-                    Console.SetCursorPosition(inicio_x, inicio_y + 1);
-                    Console.WriteLine($"Héroe:{Pcs.pcs[id].id} {Pcs.pcs[id].emoji}");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 2);
-                    Console.WriteLine($"HP: {Pcs.pcs[id].healthPoints}");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 3);
-                    Console.WriteLine($"AP: {Pcs.pcs[id].attackPoints}");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 4);
-                    Console.WriteLine($"R: {Pcs.pcs[id].range}");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 5);
-                    Console.WriteLine($"S: {Pcs.pcs[id].speed}");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 6);
-                    if(id == 0)Console.WriteLine($"H: Lanzar Granadas");
-                    if(id == 1)Console.WriteLine($"H: Impulso");
-                    if(id == 2)Console.WriteLine($"H: TTransportacion");
-                    if(id == 3)Console.WriteLine($"H: Endurecimiento");
-                    if(id == 4)Console.WriteLine($"H: Transformacion");
-                    if(id == 5)Console.WriteLine($"H: Super Salto");
-                    if(id == 6)Console.WriteLine($"H: Control Mental");
-                    if(id == 7)Console.WriteLine($"H: Orden");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 7);
-                    Console.WriteLine($"AT: {Pcs.pcs[id].abilityTimeOriginal}");
-                    Console.SetCursorPosition(inicio_x, inicio_y + 8);
-                    Console.WriteLine($"DT: {Pcs.pcs[id].downTimeOriginal}");
-                    inicio_x += 20;
-                    inicio_y = 0;
+                    Console.Write($"{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} ");
                 }
-                inicio_x += 3;
+                inicio_y++;
             }
+            inicio_y++;
+            for(int id=0 ; id < Pcs.cant_pcs ; id++)
+            {
+                Console.SetCursorPosition(inicio_x, inicio_y + 1);
+                Console.WriteLine($"Héroe:{Pcs.pcs[id].id} {Pcs.pcs[id].emoji}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 2);
+                Console.WriteLine($"HP: {Pcs.pcs[id].healthPoints}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 3);
+                Console.WriteLine($"AP: {Pcs.pcs[id].attackPoints}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 4);
+                Console.WriteLine($"R: {Pcs.pcs[id].range}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 5);
+                if(Turnos.personaje_en_juego == id)Console.WriteLine($"S: {Pcs.pcs[id].speed - Turnos.count_mov}");
+                else Console.WriteLine($"S: {Pcs.pcs[id].speed}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 6);
+                if(id == 0)Console.WriteLine($"H: Lanzar Granadas");
+                if(id == 1)Console.WriteLine($"H: Impulso");
+                if(id == 2)Console.WriteLine($"H: T_Transportacion");
+                if(id == 3)Console.WriteLine($"H: Endurecimiento");
+                if(id == 4)Console.WriteLine($"H: Transformacion");
+                if(id == 5)Console.WriteLine($"H: Super Salto");
+                if(id == 6)Console.WriteLine($"H: Control Mental");
+                if(id == 7)Console.WriteLine($"H: Orden");
+                Console.SetCursorPosition(inicio_x, inicio_y + 7);
+                Console.WriteLine($"AT: {Pcs.pcs[id].abilityTimeOriginal}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 8);
+                Console.WriteLine($"DT: {Pcs.pcs[id].downTimeOriginal}");
+                inicio_x += 23;
+                if(id == 3){inicio_y += 10; inicio_x = laberinto_ancho*2;}
+            } 
         }
         public static void inf(string info , string color)
         {
-            Thread.Sleep(3000);
-            Console.Clear();
             int ancho = Console.WindowWidth;
             int x = laberinto_ancho*2;
-            int y = 13;
+            int y = 28;
             bool v = false;
             int aux = 0;
-            for(int i=0 ; i<info.Length ; i++)
+            for(int i=0 ; i<ancho ; i++)
             {
                 aux++;
                 Console.SetCursorPosition(x+aux,y);
-                AnsiConsole.MarkupLine($"[{color}]{info[i]}[/]");
-                if(v == true && info[i] == ' ')
-                {
-                    aux = 0;
-                    y++;
-                    v = false;
+                if(i >= info.Length)
+                {  
+                    Console.Write(" ");
+                    if(x + aux >= ancho-1){y++;aux = 0;}
+                    if(y == 30)return;
                 }
-                if(x + aux + 15 > ancho)v = true;
+                else 
+                {
+                    AnsiConsole.MarkupLine($"[{color}]{info[i]}[/]");
+                    if(v == true && info[i] == ' ')
+                    {
+                        aux = 0;
+                        y++;
+                        v = false;
+                    }
+                    if(x + aux + 15 > ancho)v = true;
+                }
+                if(y == 30)return;
             }
-            compilar(0,0,0);
         }        
 /**
 //muro

@@ -29,3 +29,4 @@ D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\ref\Juego.dll
 D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Spectre.Console.dll
 D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.AssemblyReference.cache
 D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.Up2Date
+D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.sourcelink.json

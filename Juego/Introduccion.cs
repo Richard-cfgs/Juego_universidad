@@ -86,7 +86,7 @@ namespace Juego
                 if(tipo == 1)AnsiConsole.Markup($"[yellow italic]{x}[/]");
                 if(tipo == 2)AnsiConsole.Markup($"[cyan]{x}[/]");
                 if(tipo == 3)AnsiConsole.Markup($"[yellow]{x}[/]");
-                Thread.Sleep(00000001);
+                //Thread.Sleep(00000001);
                 if(v == true && x == ' ')
                 {
                     Console.WriteLine();
@@ -107,11 +107,11 @@ namespace Juego
                 Turnos.players[Turnos.cant_jugadores] = new List<int>();
                 if(Turnos.cant_jugadores > 4){
                     Turnos.cant_jugadores--;
-                    AnsiConsole.MarkupLine("[red underline]YA estan elegidos la máxima cantidad de guerreros, HA JUGAR[/]");
+                    AnsiConsole.MarkupLine("[red underline]Ya estan elegidos la máxima cantidad de guerreros, HA JUGAR[/]");
                     return;
                 }
                 Console.WriteLine();
-                AnsiConsole.MarkupLine($"[magenta bold]Jugador {Turnos.cant_jugadores} elija su Héroe tecleando su identificador(numero al lado del nombre del Héroe)[/]");
+                AnsiConsole.MarkupLine($"[magenta bold]Jugador {Turnos.cant_jugadores} elija su Héroe tecleando su identificador(numero al lado del nombre del Héroe del 0 al 7)[/]");
                 char aux = Console.ReadKey(true).KeyChar;
                 if (aux >= '0' && aux < '8' && v[aux-'0'] == false){
                     int num = aux - '0';
@@ -169,7 +169,7 @@ namespace Juego
                 Console.WriteLine();
                 while(true)
                 {
-                    aux = "Elija una opcion usando los números del 1-4";
+                    aux = "Elija una opcion usando los números del 1-5";
                     Console.CursorLeft = inicio - (aux.Length/2);
                     AnsiConsole.MarkupLine($"[red]{aux}[/]");
                     char opcion = Console.ReadKey(true).KeyChar;

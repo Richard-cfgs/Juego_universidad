@@ -3,6 +3,8 @@ namespace Juego
     public class Turnos
     {
         public static int cant_jugadores;
+        public static int count_mov = 0;
+        public static int personaje_en_juego = 0;
         private static bool v = false;
         public static Dictionary<int,List<int>> players = new Dictionary<int,List<int>>();
 //funcion para ir llevando a cada jugador y lo que puede hacer
@@ -28,6 +30,7 @@ namespace Juego
                 Npcs.mover_npcs();
                 Npcs.npcs_attack();
                 Canserbero.attack();
+                Pcs.caminar_pcs();
                 Console.Clear();
                 Compilar.compilar(0,0,0);
             }
@@ -39,13 +42,14 @@ namespace Juego
 //hacer movimientos del pc en su velocidad +1 para poder recorrer por todas las opciones
             Compilar.inf("presiona una tecla de mov (A,D,W,S), `Enter´ para usar la habilidad , `Barra Espaciadora´ para atacar o `Esc´ terminar turno" , "magenta");
             int speed = Pcs.pcs[id].speed+1;
-            int count_mov = 0;
+            count_mov = 0;
+            personaje_en_juego = id;
             for(int j=0 ; j<=speed ; j++)
             {
-                Compilar.inf("elige un movimiento", "magenta");
 //hacer un mov , habilidad o ataque
                 while(true)
                 {
+                    Compilar.inf("Elija un movimiento" , "magenta");
                     ConsoleKeyInfo tecla = Console.ReadKey(true);
 //ver si es una tecla de mov y si lo puedo hacer
                     int m = mov(tecla , id , count_mov);
@@ -57,8 +61,14 @@ namespace Juego
                         Compilar.compilar(0,0,0);
                         break;
                     }
-                    if(m == 0)Compilar.inf("ya distes el max de mov" , "red");
-                    if(m == 2)Compilar.inf("casilla inaxesible" , "red");
+                    if(m == 0){
+                        Compilar.inf("ya distes el max de mov, presiona Enter para continuar." , "red");
+                        Actualizar.continuar();
+                    }
+                    if(m == 2){
+                        Compilar.inf("casilla inaxesible, presiona Enter para continuar." , "red");
+                        Actualizar.continuar();
+                    }
 //sino es de mov ver si es de habilidad y ejecutarla
                     if(m == -1)
                     {
@@ -68,7 +78,10 @@ namespace Juego
                             Compilar.compilar(0,0,0);
                             break;
                         }
-                        if(h == 0)Compilar.inf("la habilidad no esta lista aun" , "red");
+                        if(h == 0){
+                            Compilar.inf("la habilidad no está lista aun, presiona Enter para continuar." , "red");
+                            Actualizar.continuar();
+                        }
 //si no es de mov ni habilidad ver si es de ataque
                         if(h == -1)
                         {
@@ -79,17 +92,22 @@ namespace Juego
                                 v = true;
                                 break;
                             }
-                            if(a == 0)Compilar.inf("no puedes atacar mas durante este turno" , "red");
+                            if(a == 0){
+                                Compilar.inf("no puedes atacar más durante este turno, presiona Enter para continuar." , "red");
+                                Actualizar.continuar();
+                            }
                             if(a == -1)
                             {
                                 if(tecla.Key == ConsoleKey.Escape)return;
-                                Compilar.inf("no es un comando" , "red");
+                                Compilar.inf("no es un comando, presiona Enter para continuar." , "red");
+                                Actualizar.continuar();
                             }
                         }
                     }
                 }
             }
-            Compilar.inf($"se ha acabado el turno del jugador {jugador}" , "red");
+            Compilar.inf($"se ha acabado el turno del jugador {jugador}, presiona Enter para continuar." , "red");
+            Actualizar.continuar();
         }
         private static int attack(ConsoleKeyInfo tecla, int id , int jugador)
         {
@@ -110,7 +128,8 @@ namespace Juego
                             recorrer_ataque(dx , dy , id , jugador);
                             return 1;
                         }
-                        Compilar.inf("comando incorrecto" , "red");
+                        Compilar.inf("comando incorrecto, presiona Enter para continuar." , "red");
+                        Actualizar.continuar();
                     }
                 }
                 else return 0;
@@ -206,7 +225,8 @@ namespace Juego
                     int id = aux - '0';
                     if(Pcs.pcs[id].jugador == jugador)return id;
                 }
-                Compilar.inf("Ese Héroe no existe o no es aliado suyo" , "red");
+                Compilar.inf("Ese Héroe no existe o no es aliado suyo, presiona Enter para continuar." , "red");
+                Actualizar.continuar();
             }
         }
     }

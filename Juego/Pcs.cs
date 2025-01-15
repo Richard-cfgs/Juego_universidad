@@ -128,7 +128,10 @@ namespace Juego
                     if(d.Key == ConsoleKey.D)y = 2;
                     if(d.Key == ConsoleKey.A)y = -2;
                     if(d.Key == ConsoleKey.Escape)return;
-                    if(x == 0 && y == 0)Compilar.inf("comando incorrecto" , "red");
+                    if(x == 0 && y == 0){
+                        Compilar.inf("comando incorrecto" , "red");
+                        Actualizar.continuar();
+                    }
                     else{
                         if(pcs[id].abilityTimeOriginal == 0)pcs[id].abilityTime = 1;
                         else pcs[id].abilityTime = pcs[id].abilityTimeOriginal;
@@ -184,11 +187,17 @@ namespace Juego
                                     pcs[id].downTime = pcs[id].downTimeOriginal;
                                     return;
                                 }
-                                else Compilar.inf("posicion invalida o comando incorrecto" , "red");
+                                else{
+                                    Compilar.inf("posicion invalida o comando incorrecto" , "red");
+                                    Actualizar.continuar();
+                                }
                             }
                         }
                     }
-                    else Compilar.inf("id erroneo" , "red");
+                    else{
+                        Compilar.inf("id erroneo" , "red");
+                        Actualizar.continuar();
+                    }
                 }
             }
             if(id == 3){
@@ -228,7 +237,8 @@ namespace Juego
                         return;
                     }
                     if(tecla.Key == ConsoleKey.Escape)return;
-                    Compilar.inf("posición inaccesible" , "magenta");
+                    Compilar.inf("posición inaccesible" , "red");
+                    Actualizar.continuar();
                 }
             }
             if(id == 6)
@@ -265,6 +275,7 @@ namespace Juego
                         int x1 = 0, y1 = 0;
                         if(count_pasos == Npcs.speed){
                             Compilar.inf("el guardian ya ha dado el max de pasos" , "red");
+                            Actualizar.continuar();
                             break;
                         }
                         if(tecla.Key == ConsoleKey.W)x1--;
@@ -299,7 +310,10 @@ namespace Juego
                 if(Laberinto.verificar_pos(x1,y1) != -1)v = true;
             }
             Console.Clear();
-            if(v == false)Compilar.inf("explocion de granada fuera del laberinto" , "yellow");
+            if(v == false){
+                Compilar.inf("explocion de granada fuera del laberinto" , "yellow");
+                Actualizar.continuar();
+            }
             else Compilar.compilar(3,x,y);
         }
 //usar la habilidad del pc 1,itero desde la ultima posicion que puede llegar el pc para revisar cual es la max y despues voy caminando desde 0 hasta la maxima quitando vida a los enemigos
@@ -330,8 +344,10 @@ namespace Juego
                 if(Laberinto.verificar_pos(x1,y1) == -1)
                 {
                     Compilar.inf("has chocado con el fin del laberinto" , "red");
+                    Actualizar.continuar();
                     break;
                 }
+                Thread.Sleep(3000);
                 Console.Clear();
                 Compilar.compilar(1,x1,y1);
             }
@@ -380,10 +396,14 @@ namespace Juego
                         int x = pcs[i].posx + Laberinto.dx[j];
                         int y = pcs[i].posy + Laberinto.dy[j];
                         if(Laberinto.verificar_pos(x,y) == 1){
+                            Thread.Sleep(1000);
+                            Compilar.compilar(1,pcs[i].posx,pcs[i].posy);
                             pos_pcs[(pcs[i].posx,pcs[i].posy)].Remove(i);
                             pcs[i].posx = x;
                             pcs[i].posy = y;
                             pos_pcs[(pcs[i].posx,pcs[i].posy)].Add(i);
+                            Thread.Sleep(1000);
+                            Compilar.compilar(1,pcs[i].posx,pcs[i].posy);
                         }
                     }
                 }
