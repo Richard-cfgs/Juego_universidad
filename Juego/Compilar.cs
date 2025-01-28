@@ -27,7 +27,11 @@ namespace Juego
                             }  
                             else
                             {
-                                if(i == j && i == Laberinto.size/2)Console.Write("👾");
+                                if(i == j && i == Laberinto.size/2)
+                                {
+                                    if(Pcs.pos_pcs[(i,j)].Count == 0)Console.Write("👾");
+                                    else Console.Write("⚔️");
+                                }
                                 else{
                                     if(Laberinto.mat[i,j] == 0)
                                     {
@@ -68,23 +72,26 @@ namespace Juego
                 }
                 Console.WriteLine();
             }
-            inf_pcs();
+            inf_pcs(-1);
         }
-        public static void inf_pcs()
+        public static void inf_pcs(int p)
         {
             int inicio_y = 0; 
-            int inicio_x = laberinto_ancho*2; 
+            int inicio_x = laberinto_ancho*2;    
             for(int i=1 ; i<=Turnos.cant_jugadores ; i++)
             {
-                //Console.WriteLine($"{i} {Pcs.pcs_principales[Pcs.pcs[i].id]}");
                 Console.SetCursorPosition(inicio_x,inicio_y);
                 Console.Write($"Jugador {i} - Héroes: ");
                 foreach(int id in Turnos.players[i])
                 {
-                    Console.Write($"{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} ");
+                    if(p == id)AnsiConsole.Markup($"[underline]{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} [/]");
+                    else Console.Write($"{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} ");
                 }
                 inicio_y++;
             }
+            inicio_y++;
+            Console.SetCursorPosition(inicio_x,inicio_y);
+            Console.WriteLine($"Canserbero.HP: {Canserbero.healthPoints_canserbero}");
             inicio_y++;
             for(int id=0 ; id < Pcs.cant_pcs ; id++)
             {
@@ -97,7 +104,11 @@ namespace Juego
                 Console.SetCursorPosition(inicio_x, inicio_y + 4);
                 Console.WriteLine($"R: {Pcs.pcs[id].range}");
                 Console.SetCursorPosition(inicio_x, inicio_y + 5);
-                if(Turnos.personaje_en_juego == id)Console.WriteLine($"S: {Pcs.pcs[id].speed - Turnos.count_mov}");
+                if(Turnos.personaje_en_juego == id)
+                {
+                    if(Pcs.pcs[id].speed - Turnos.count_mov < 0)Console.WriteLine($"S: {0}");
+                    else Console.WriteLine($"S: {Pcs.pcs[id].speed - Turnos.count_mov}");
+                }
                 else Console.WriteLine($"S: {Pcs.pcs[id].speed}");
                 Console.SetCursorPosition(inicio_x, inicio_y + 6);
                 if(id == 0)Console.WriteLine($"H: Lanzar Granadas");
@@ -109,18 +120,24 @@ namespace Juego
                 if(id == 6)Console.WriteLine($"H: Control Mental");
                 if(id == 7)Console.WriteLine($"H: Orden");
                 Console.SetCursorPosition(inicio_x, inicio_y + 7);
-                Console.WriteLine($"AT: {Pcs.pcs[id].abilityTimeOriginal}");
+                Console.WriteLine($"Affected Turns: {Pcs.pcs[id].affectedTurns}");
                 Console.SetCursorPosition(inicio_x, inicio_y + 8);
-                Console.WriteLine($"DT: {Pcs.pcs[id].downTimeOriginal}");
+                Console.WriteLine($"AT Original: {Pcs.pcs[id].abilityTimeOriginal}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 9);
+                Console.WriteLine($"AT Actual: {Pcs.pcs[id].abilityTime}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 10);
+                Console.WriteLine($"DT Original: {Pcs.pcs[id].downTimeOriginal}");
+                Console.SetCursorPosition(inicio_x, inicio_y + 11);
+                Console.WriteLine($"DT Actual: {Pcs.pcs[id].downTime}");
                 inicio_x += 23;
-                if(id == 3){inicio_y += 10; inicio_x = laberinto_ancho*2;}
-            } 
+                if(id == 3){inicio_y += 13; inicio_x = laberinto_ancho*2;}
+            }
         }
         public static void inf(string info , string color)
         {
             int ancho = Console.WindowWidth;
-            int x = laberinto_ancho*2;
-            int y = 28;
+            int x = (laberinto_ancho*2)-1;
+            int y = 32;
             bool v = false;
             int aux = 0;
             for(int i=0 ; i<ancho ; i++)
@@ -131,7 +148,7 @@ namespace Juego
                 {  
                     Console.Write(" ");
                     if(x + aux >= ancho-1){y++;aux = 0;}
-                    if(y == 30)return;
+                    if(y == 34)return;
                 }
                 else 
                 {
@@ -144,7 +161,7 @@ namespace Juego
                     }
                     if(x + aux + 15 > ancho)v = true;
                 }
-                if(y == 30)return;
+                if(y == 34)return;
             }
         }        
 /**

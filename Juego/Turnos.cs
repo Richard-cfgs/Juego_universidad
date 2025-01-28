@@ -2,6 +2,7 @@ namespace Juego
 {
     public class Turnos
     {
+        public static int speed;
         public static int cant_jugadores;
         public static int count_mov = 0;
         public static int personaje_en_juego = 0;
@@ -11,28 +12,33 @@ namespace Juego
         public static void turnos()
         {
             if(Canserbero.terminar == true)return;
-            Console.Clear();    
-            Compilar.compilar(0,0,0);
             while(true)
             {
-//recorro cada jugador            
+//recorro cada jugador       
+                personaje_en_juego = -1;   
+                count_mov = 0;   
                 for(int i=1 ; i<=cant_jugadores ; i++){
-                    if(Actualizar.verificar_jugador_muerto(i) == 0)continue;
-//verificar el uso de habilidades , el fin de los tiempos de habilidades y afectaciones por trampas
                     Actualizar.times(i);
+                    Compilar.compilar(0,0,0);
+                    if(Actualizar.verificar_jugador_muerto(i) == 1)
+                    {
+//verificar el uso de habilidades , el fin de los tiempos de habilidades y afectaciones por trampas
 //v es para que cada jugador pueda atacar una sola vez en su turno y llamo a la funcion que revisa que tipo de mov se ejecura
-                    v = false;
-                    hacer_mov(i); 
+                        Compilar.compilar(0,0,0);
+                        v = Pcs.super_salto = false;
+                        hacer_mov(i); 
+                    }
                 }
 //cuando todos los jugadores hagan su mov se mueven los npcs
-                Compilar.inf("Se están moviendo los guardianes" , "blue");
-                Npcs.npcs_attack();
+                Compilar.inf("Se están moviendo los guardianes y héroes" , "blue");
+                Thread.Sleep(3000);
+//marcar para que cada npc ataque una sola vez
+                bool[] ya_atacaron = new bool[Npcs.cant_npcs];
+                Npcs.npcs_attack(ya_atacaron);
                 Npcs.mover_npcs();
-                Npcs.npcs_attack();
+                Npcs.npcs_attack(ya_atacaron);
                 Canserbero.attack();
                 Pcs.caminar_pcs();
-                Console.Clear();
-                Compilar.compilar(0,0,0);
             }
         }
         public static void hacer_mov(int jugador)
@@ -40,34 +46,23 @@ namespace Juego
 //jugador elige el pc a mover
             int id = elegir_pc(jugador);
 //hacer movimientos del pc en su velocidad +1 para poder recorrer por todas las opciones
-            Compilar.inf("presiona una tecla de mov (A,D,W,S), `Enter´ para usar la habilidad , `Barra Espaciadora´ para atacar o `Esc´ terminar turno" , "magenta");
-            int speed = Pcs.pcs[id].speed+1;
             count_mov = 0;
             personaje_en_juego = id;
-            for(int j=0 ; j<=speed ; j++)
+            while(true)
             {
 //hacer un mov , habilidad o ataque
                 while(true)
                 {
-                    Compilar.inf("Elija un movimiento" , "magenta");
+                    Compilar.inf("presiona una tecla de movimiento, `Enter´ para usar la habilidad , `Barra Espaciadora´ para atacar o `Esc´ terminar turno" , "magenta");
                     ConsoleKeyInfo tecla = Console.ReadKey(true);
 //ver si es una tecla de mov y si lo puedo hacer
                     int m = mov(tecla , id , count_mov);
                     if(m == 1){
                         count_mov++;
-                        Actualizar.tomar_pcs(jugador,id);
+                        Actualizar.tomar_pcs(id);
                         Trampas.caer_trampa(id);
-                        Console.Clear();
                         Compilar.compilar(0,0,0);
                         break;
-                    }
-                    if(m == 0){
-                        Compilar.inf("ya distes el max de mov, presiona Enter para continuar." , "red");
-                        Actualizar.continuar();
-                    }
-                    if(m == 2){
-                        Compilar.inf("casilla inaxesible, presiona Enter para continuar." , "red");
-                        Actualizar.continuar();
                     }
 //sino es de mov ver si es de habilidad y ejecutarla
                     if(m == -1)
@@ -85,58 +80,56 @@ namespace Juego
 //si no es de mov ni habilidad ver si es de ataque
                         if(h == -1)
                         {
-                            int a = attack(tecla , id , jugador);
+                            int a = attack(tecla , id);
                             if(a == 1){
-                                Console.Clear();
                                 Compilar.compilar(0,0,0);
                                 v = true;
                                 break;
                             }
+                            if(a == 2)continue;
                             if(a == 0){
                                 Compilar.inf("no puedes atacar más durante este turno, presiona Enter para continuar." , "red");
                                 Actualizar.continuar();
                             }
                             if(a == -1)
                             {
-                                if(tecla.Key == ConsoleKey.Escape)return;
-                                Compilar.inf("no es un comando, presiona Enter para continuar." , "red");
-                                Actualizar.continuar();
+                                if(tecla.Key == ConsoleKey.Escape){
+                                    personaje_en_juego = -1; 
+                                    return;
+                                }
                             }
                         }
                     }
                 }
             }
-            Compilar.inf($"se ha acabado el turno del jugador {jugador}, presiona Enter para continuar." , "red");
-            Actualizar.continuar();
         }
-        private static int attack(ConsoleKeyInfo tecla, int id , int jugador)
+        private static int attack(ConsoleKeyInfo tecla, int id)
         {
             if(tecla.Key == ConsoleKey.Spacebar)
             {
                 if(v == false)
                 {
-                    Compilar.inf("elige direccion(arriba-w, abajo-s, derecha-d, izquierda-a) para atacar" , "magenta");
                     while(true)
                     {
+                        Compilar.inf("elige direccion para atacar o Esc para cancelar" , "magenta");
                         ConsoleKeyInfo d = Console.ReadKey(true);
                         int dx = 0 , dy = 0;
-                        if(d.Key == ConsoleKey.W){dx = -1;Compilar.inf("has atacado hacia arriba", "yellow");}
-                        if(d.Key == ConsoleKey.S){dx = 1;Compilar.inf("has atacado hacia abajo" , "yellow");}
-                        if(d.Key == ConsoleKey.D){dy = 1;Compilar.inf("has atacado hacia la derecha" , "yellow");}
-                        if(d.Key == ConsoleKey.A){dy = -1;Compilar.inf("has atacado hacia la izquierda" , "yellow");}
+                        if(d.Key == ConsoleKey.W || d.Key == ConsoleKey.UpArrow)dx--;
+                        if(d.Key == ConsoleKey.S || d.Key == ConsoleKey.DownArrow)dx++;
+                        if(d.Key == ConsoleKey.D || d.Key == ConsoleKey.RightArrow)dy++;
+                        if(d.Key == ConsoleKey.A || d.Key == ConsoleKey.LeftArrow)dy--;
                         if(dx != 0 || dy != 0){
-                            recorrer_ataque(dx , dy , id , jugador);
+                            recorrer_ataque(dx , dy , id);
                             return 1;
                         }
-                        Compilar.inf("comando incorrecto, presiona Enter para continuar." , "red");
-                        Actualizar.continuar();
+                        if(d.Key == ConsoleKey.Escape)return 2;
                     }
                 }
                 else return 0;
             }
             else return -1;
         }
-        private static void recorrer_ataque(int dx , int dy , int id , int jugador)
+        private static void recorrer_ataque(int dx , int dy , int id)
         {
 //iterar por las posiciones que llega el ataque
             for(int i=0 ; i<=Pcs.pcs[id].range ; i++)
@@ -164,7 +157,7 @@ namespace Juego
                         if(Pcs.pcs[index].jugador == 0)continue;
                         Pcs.pcs[index].healthPoints -= Pcs.pcs[id].attackPoints;
 //si la vida es cero mandarlo a la pos inicial y esperar durante 5 turnos
-                        Actualizar.revisar_muerto(index , true , jugador);
+                        Actualizar.revisar_muerto(index , true , id);
                     }
                 }
 //si hay npcs en la posicion hago lo mismo
@@ -181,23 +174,30 @@ namespace Juego
         }
         private static int mov(ConsoleKeyInfo tecla, int id, int cant_mov_realizados)
         {
-            if(tecla.Key == ConsoleKey.A || tecla.Key == ConsoleKey.D || tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.S)
+            if(tecla.Key == ConsoleKey.A || tecla.Key == ConsoleKey.D || tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.UpArrow || tecla.Key == ConsoleKey.DownArrow || tecla.Key == ConsoleKey.RightArrow || tecla.Key == ConsoleKey.LeftArrow)
             {
                 if(cant_mov_realizados == Pcs.pcs[id].speed)return 0;
                 else{
                     Pcs.pos_pcs[(Pcs.pcs[id].posx,Pcs.pcs[id].posy)].Remove(id);
                     int dx = 0, dy = 0;
-                    if(tecla.Key == ConsoleKey.W)dx--;
-                    if(tecla.Key == ConsoleKey.S)dx++;
-                    if(tecla.Key == ConsoleKey.D)dy++;
-                    if(tecla.Key == ConsoleKey.A)dy--;
-                    if((dx != 0 || dy != 0) && Laberinto.verificar_pos(Pcs.pcs[id].posx+dx , Pcs.pcs[id].posy+dy) == 1){
+                    if(tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.UpArrow)dx--;
+                    if(tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.DownArrow)dx++;
+                    if(tecla.Key == ConsoleKey.D || tecla.Key == ConsoleKey.RightArrow)dy++;
+                    if(tecla.Key == ConsoleKey.A || tecla.Key == ConsoleKey.LeftArrow)dy--;
+                    if((dx != 0 || dy != 0) && Laberinto.verificar_pos(Pcs.pcs[id].posx+dx , Pcs.pcs[id].posy+dy) == 1)
+                    {
                         Pcs.pcs[id].posx = Pcs.pcs[id].posx+dx;
                         Pcs.pcs[id].posy = Pcs.pcs[id].posy+dy;
                         Pcs.pos_pcs[(Pcs.pcs[id].posx,Pcs.pcs[id].posy)].Add(id);
+                        if(Pcs.pcs[id].posx+dx >= (Laberinto.size/2)-2 && Pcs.pcs[id].posx+dx <= (Laberinto.size/2)+2 && Pcs.pcs[id].posy+dy >= (Laberinto.size/2)-2 && Pcs.pcs[id].posy+dy <= (Laberinto.size/2)+2)
+                        {
+                            Pcs.pcs[id].healthPoints--;
+                            Actualizar.revisar_muerto(id , true , -1);
+                        }
                         return 1;
                     }
-                    return 2;
+                    Pcs.pos_pcs[(Pcs.pcs[id].posx,Pcs.pcs[id].posy)].Add(id);
+                    return 0;
                 }
             }
             else return -1;
@@ -216,17 +216,26 @@ namespace Juego
         }
         private static int elegir_pc(int jugador)
         {
+            int pos = 0;
             while(true)
             {
-                Compilar.inf($"Jugador {jugador} elija el id del personaje que quiera mover" ,  "magenta");
-                char aux = Console.ReadKey(true).KeyChar;
-                if(aux >= '0' && aux < '8')
+                Compilar.inf_pcs(players[jugador][pos]);
+                Compilar.inf("Elija el personaje que quiera mover" , "magenta");
+                ConsoleKeyInfo tecla = Console.ReadKey(true);
+                if(tecla.Key == ConsoleKey.D || tecla.Key == ConsoleKey.RightArrow)
                 {
-                    int id = aux - '0';
-                    if(Pcs.pcs[id].jugador == jugador)return id;
+                    pos++;
+                    if(pos >= players[jugador].Count)pos = 0;
                 }
-                Compilar.inf("Ese Héroe no existe o no es aliado suyo, presiona Enter para continuar." , "red");
-                Actualizar.continuar();
+                if(tecla.Key == ConsoleKey.A || tecla.Key == ConsoleKey.LeftArrow)
+                {
+                    pos--;
+                    if(pos < 0)pos = players[jugador].Count-1;
+                }
+                if(tecla.Key == ConsoleKey.Enter)
+                {
+                    return players[jugador][pos];
+                }
             }
         }
     }

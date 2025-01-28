@@ -4,7 +4,7 @@ namespace Juego
     {
         public static int speed = 3;
         public static int range = 2;
-        public static int fuerza = 100;
+        public static int fuerza = 5;
         public static int cant_npcs = 20;
         public static int[] m1 = new int[Npcs.cant_npcs];
         public static List<Npcs>npcs = new List<Npcs>();
@@ -70,10 +70,10 @@ namespace Juego
                     pos_npcs[(npcs[i].posx,npcs[i].posy)].Add(i);
                 }
             }
-            Compilar.compilar(0,0,0);
         }
-        public static void npcs_attack()
+        public static void npcs_attack(bool[] ya_atacaron)
         {
+            bool[] restringir_ataque = new bool[5];
 //iterar por las pos a las que llega el ataque
             for(int i=0 ; i<=range ; i++)
             {
@@ -82,33 +82,43 @@ namespace Juego
                 {
 //si no pertenece a ningun jugador que no lo ataquen
                     if(Pcs.pcs[j].jugador == 0)continue;
+                    if(Pcs.pcs[j].healthPoints <= 0)continue;
 //si el rango es 0 revisar esa pos sino reviso todas posibles para atacar
-                    if(i == 0)quitar_vida_npc(Pcs.pcs[j].posx , Pcs.pcs[j].posy , j);
+                    if(i == 0)quitar_vida_npc(Pcs.pcs[j].posx , Pcs.pcs[j].posy , j , ya_atacaron , 0 , restringir_ataque);
                     else{
                         for(int q=0 ; q<4 ; q++)
                         {    
                             int x = Pcs.pcs[j].posx + Laberinto.dx[q]*i;
                             int y = Pcs.pcs[j].posy + Laberinto.dy[q]*i;
-                            quitar_vida_npc(x,y,j);
+                            quitar_vida_npc(x,y,j,ya_atacaron,q,restringir_ataque);
                         }
                     }
                 }
             }
         }
-        private static void quitar_vida_npc(int x , int y , int id)
+        private static void quitar_vida_npc(int x , int y , int id , bool[] ya_atacaron , int direccion , bool[] restringir_ataque)
         {
-            if(Laberinto.verificar_pos(x,y) == 1)
+            if(Laberinto.verificar_pos(x,y) == 1 && restringir_ataque[direccion] == false)
             {
                 if(pos_npcs[(x,y)].Count != 0)
                 {
-                    Compilar.inf("Has sido atacado por los guardianes" , "yellow");
-                    Pcs.pcs[id].healthPoints -= fuerza*pos_npcs[(x,y)].Count;
-                    Actualizar.revisar_muerto(id,true,-1);
-                    Thread.Sleep(3000);
-                    Compilar.compilar(1,x,y);
-                    Thread.Sleep(3000);
-                    Compilar.compilar(1,Pcs.pcs[id].posx,Pcs.pcs[id].posy);
+                    foreach(int id_npc in pos_npcs[(x,y)])
+                    {
+                        if(ya_atacaron[id_npc] == true)continue;
+                        ya_atacaron[id_npc] = true;
+                        Compilar.inf($"El Héroe {id} ha sido atacado por los guardianes" , "yellow");
+                        Pcs.pcs[id].healthPoints -= fuerza;
+                        Actualizar.revisar_muerto(id,true,-1);
+                        Compilar.compilar(1,x,y);
+                        Thread.Sleep(2000);
+                        Compilar.compilar(1,Pcs.pcs[id].posx,Pcs.pcs[id].posy);
+                        Thread.Sleep(2000);
+                    }
                 }
+            }
+            else
+            {
+                restringir_ataque[direccion] = true;
             }
         }
     }

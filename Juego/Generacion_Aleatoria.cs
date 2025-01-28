@@ -14,8 +14,8 @@ namespace Juego
 //mientras las pos esten en el centro busco otras nuevas
             while(posx >= inf && posx <= sup && posy >= inf && posy <= sup)
             {
-                posx = ram.Next(a , Laberinto.size-a);
-                posy = ram.Next(a , Laberinto.size-a);
+                posx = ram.Next(a , Laberinto.size-(a+1));
+                posy = ram.Next(a , Laberinto.size-(a+1));
             }
 //ahora reviso si el lab en la pos no es lo que quiero busco las adyacentes
             if(Laberinto.mat[posx,posy] != cond){

@@ -8,13 +8,13 @@ namespace Juego
         public static int[,] trampa = new int[Laberinto.size,Laberinto.size];
         public static void caer_trampa(int id)
         {
+//verifico si caes en alguna trampa 
             if(trampa[Pcs.pcs[id].posx,Pcs.pcs[id].posy] != 0 && desactivar_trampa[Pcs.pcs[id].posx,Pcs.pcs[id].posy] == false){
+//desactivar la trampa 
                 desactivar_trampa[Pcs.pcs[id].posx,Pcs.pcs[id].posy] = true;
-                Compilar.inf("caistes en una trampa" , "yellow");
+//ejecutar la accion de la trampa
                 trampas(id,trampa[Pcs.pcs[id].posx,Pcs.pcs[id].posy]);
-                Console.Clear();
-                Compilar.compilar(1 , Pcs.pcs[id].posx , Pcs.pcs[id].posy);
-                Actualizar.revisar_muerto(id , true , -1);
+                Compilar.compilar(0 , 0 , 0);
             }
         }
         public static void trampas(int iden_p , int iden_t)
@@ -22,12 +22,16 @@ namespace Juego
             //pasas por un espectro y te quita la mitad de la vida, fuerza y rapidez durante 3 turnos
             if(iden_t == 1){
                 //si el personaje no esta afectado lo afecto y le igualo a 3 los turnos afectados
-                Compilar.inf("pasas por un espectro y te quita la mitad de la vida, fuerza y rapidez durante 3 turnos" , "blue");
+                Compilar.inf("pasas por un espectro y te quita la mitad de la vida, fuerza y rapidez durante 3 turnos, presione Enter para continuar" , "yellow");
+                Actualizar.continuar();
                 if(Pcs.pcs[iden_p].affectedTurns == 0){
                     Pcs.pcs[iden_p].healthPoints /= 2;
                     Pcs.pcs[iden_p].attackPoints /= 2;
                     Pcs.pcs[iden_p].speed /= 2;
+//para que reducir la velocidad en el turno que esta jugando
+                    Turnos.speed /= 2;
                     Pcs.pcs[iden_p].affectedTurns = 3 + 2;
+                    Actualizar.revisar_muerto(iden_p , true , -1);
                 }
                 //sino solo le aumento 3 a los turnos afectados
                 else{
@@ -36,22 +40,26 @@ namespace Juego
             }
             //brota lava del suelo y le quito 5 a la vida al personaje
             if(iden_t == 2){
-                Compilar.inf("brota lava del suelo y le quito 5 a la vida al personaje" , "blue");
+                Compilar.inf("brota lava del suelo y le quito 5 a la vida al personaje, presione Enter para continuar" , "yellow");
+                Actualizar.continuar();
                 Pcs.pcs[iden_p].healthPoints = Pcs.pcs[iden_p].healthPoints-5;
                 Actualizar.revisar_muerto(iden_p , true , -1);
             }
     //el suelo se agrieta y caes en una pos aleatoria
             if(iden_t == 3){
-                Compilar.inf("el suelo se agrieta y caes en una pos aleatoria" , "blue");
+                Compilar.inf("el suelo se agrieta y caes en una pos aleatoria, presione Enter para continuar" , "yellow");
+                Actualizar.continuar();
                 Generacion_Aleatoria.generar(1,1);
                 Pcs.pos_pcs[(Pcs.pcs[iden_p].posx , Pcs.pcs[iden_p].posy)].Remove(iden_p);
                 Pcs.pcs[iden_p].posx = Generacion_Aleatoria.posx;    
                 Pcs.pcs[iden_p].posy = Generacion_Aleatoria.posy;    
                 Pcs.pos_pcs[(Pcs.pcs[iden_p].posx , Pcs.pcs[iden_p].posy)].Add(iden_p);
+                Actualizar.tomar_pcs(iden_p);
             }
             //gas toxico que evita q uses tu habilidad durante 3 turnos      
             if(iden_t == 4){
-                Compilar.inf("gas toxico que evita q uses tu habilidad durante 3 turnos" , "blue");
+                Compilar.inf("gas toxico que evita q uses tu habilidad durante 3 turnos, presione Enter para continuar" , "yellow");
+                Actualizar.continuar();
                 Pcs.pcs[iden_p].downTime += 3;
             }
         }

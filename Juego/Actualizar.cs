@@ -11,6 +11,24 @@ namespace Juego
             {
                 if(Pcs.pcs[index_muerto].healthPoints <= 0)
                 {
+                    Pcs.pcs[index_muerto].healthPoints = 0;
+                    if(Pcs.pcs_principales[index_muerto] == true)
+                    {
+//si el que muere es un pc principal recorro a todos sus aliados y le igualo el jugador a 0
+                        int jugador_muerto = Pcs.pcs[index_muerto].jugador;
+                        foreach(int id_aliados in Turnos.players[Pcs.pcs[index_muerto].jugador])
+                        {
+                            if(Pcs.pcs[id_aliados].jugador != jugador_muerto)Pcs.pcs[id_aliados].jugador = 0;
+                        }
+//limpio la lista de sus aliados
+                        Turnos.players[jugador_muerto].Clear();
+//add al pc principal
+                        Turnos.players[jugador_muerto].Add(index_muerto);
+//le igualo a los 5 turnos que no puede jugar
+                        jugadores_muertos[jugador_muerto] = 7;
+//y elimino el pc de la posicion
+                        Pcs.pos_pcs[(Pcs.pcs[index_muerto].posx,Pcs.pcs[index_muerto].posy)].Remove(index_muerto);
+                    }
 //y no es el personaje principal de ningun jugador lo elimino y se lo dos al jugador que lo mato
                     if(Pcs.pcs_principales[index_muerto] == false)
                     {
@@ -33,14 +51,6 @@ namespace Juego
                         }
                         Pcs.pcs[index_muerto].jugador = 0;
                     }
-                    else
-                    {
-//si el que muere es un pc principal quito todos los pc que tenga ese jugador y lo saco durante 5 turnos y hago lo mismo que un psc normal
-                        Turnos.players[Pcs.pcs[index_muerto].jugador].Clear();
-                        Turnos.players[Pcs.pcs[index_muerto].jugador].Add(index_muerto);
-                        jugadores_muertos[Pcs.pcs[index_muerto].jugador] = 7;
-                        Pcs.pos_pcs[(Pcs.pcs[index_muerto].posx,Pcs.pcs[index_muerto].posy)].Remove(index_muerto);
-                    }
                 }
             }
             else
@@ -59,18 +69,21 @@ namespace Juego
         {
             if(jugadores_muertos[jugador] > 1){
                 jugadores_muertos[jugador]--;
-                Compilar.inf($"jugador {jugador} herido" , "yellow");
+                Compilar.inf($"jugador {jugador} herido, presiona Enter para continuar" , "yellow");
+                continuar();
                 return 0;
             }
             else{
                 if(jugadores_muertos[jugador] == 1){
-                    Compilar.inf($"jugador {jugador} terminó de sanar" , "yellow");
+                    Compilar.inf($"jugador {jugador} terminó de sanar, presiona Enter para continuar" , "yellow");
+                    continuar();
                     jugadores_muertos[jugador] = 0;
                     int index = Turnos.players[jugador][0];
                     Pcs.pcs.RemoveAt(index);
                     Pcs.inf_pcs(index,false);
                     Laberinto.barajear_direcciones(Pcs.d);
-                    Pcs.pos_pcs_elegidos(jugador,index);;
+                    Pcs.pos_pcs_elegidos(jugador,index);
+                    Pcs.pcs[index].jugador = jugador;
                 }
                 return 1;
             }
@@ -106,11 +119,15 @@ namespace Juego
                 }
             }
         }
-        public static void tomar_pcs(int jugador , int id)
+        public static void tomar_pcs(int id)
         {
-            for(int i=0 ; i<Pcs.pos_pcs[(Pcs.pcs[id].posx,Pcs.pcs[id].posy)].Count ; i++)
+            foreach(int i in Pcs.pos_pcs[(Pcs.pcs[id].posx , Pcs.pcs[id].posy)])
             {
-                if(Pcs.pcs[i].jugador == 0 && Pcs.pcs[i].jugador != jugador)Turnos.players[jugador].Add(i);
+                if(Pcs.pcs[i].jugador == 0 && Pcs.pcs[i].jugador != Pcs.pcs[id].jugador)
+                {
+                    Turnos.players[Pcs.pcs[id].jugador].Add(i);
+                    Pcs.pcs[i].jugador = Pcs.pcs[id].jugador;
+                }
             }
         }
         public static void continuar()

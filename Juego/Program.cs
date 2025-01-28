@@ -15,10 +15,7 @@
 //generar npsc aleatoriamente 
             Npcs.crear_npcs();
 //introduccion al juego
-            int m = Introduccion.menu();
-            if(m == 0)return;
-//jugar
-            Turnos.turnos();
+            Introduccion.menu();
         }
     }
 }

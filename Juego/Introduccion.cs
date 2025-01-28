@@ -21,42 +21,11 @@ namespace Juego
                     menu();
                     return;
                 }
-                AnsiConsole.MarkupLine("[red underline]Comando incorrecto[/]");
             }          
-        }
-        private static void héroes()
-        {
-//darle los valores al string heroes para mostrar en consola
-//mostrar pcs
-            asignar();
-            AnsiConsole.MarkupLine("[yellow underline italic]Héroes:[/]");
-            for(int i=0 ; i<8 ; i++)
-            {
-                Console.WriteLine();
-                for(int j=0 ; j<10 ; j++)
-                {
-                    if(j == 3)AnsiConsole.MarkupLine("[blue italic]Características:[/]");
-                    if(j == 0)Escribir(heroes[i,j], 1);
-                    else Escribir(heroes[i,j], 2);
-                }
-            }
-            Console.WriteLine();
-            AnsiConsole.MarkupLine("[magenta bold]Presione Esc para regresar al Menu[/]");
-            while(true)
-            {
-                ConsoleKeyInfo tecla = Console.ReadKey(true);
-                if(tecla.Key == ConsoleKey.Escape){
-                    menu();
-                    return;
-                }
-                AnsiConsole.MarkupLine("[red underline]Comando incorrecto[/]");
-            }
         }
         private static void nuevo_juego()
         {
-            AnsiConsole.MarkupLine($"[blue]¿Cuantos Héroes están dispuestos a luchar por su país? solo pueden viajar juntos en esta aventura un maximo de 4 guerreros.[/]");
             elegir_pc_iniciales();
-            AnsiConsole.MarkupLine($"[blue]Perfecto, ahora ustedes {Turnos.cant_jugadores} serán transportados al infierno.[/]");
             Turnos.turnos();
         }
         private static void como_jugar()
@@ -72,7 +41,6 @@ namespace Juego
                     menu();
                     return;
                 }
-                AnsiConsole.MarkupLine("[red underline]Comando incorrecto[/]");
             }
         }
 //escribir los textos con un retraso para simular que se van escribiendo
@@ -98,104 +66,143 @@ namespace Juego
         }
         private static void elegir_pc_iniciales()
         {
-            Turnos.cant_jugadores = 1;
 //barajear las pos donde se van a crear los pcs elegidos
             Laberinto.barajear_direcciones(Pcs.d);
-            bool[] v = new bool[8]; 
-            while(true)
+//no elegir dos veces el mismo pc
+            bool[] v = new bool[10]; 
+//guardar las propiedades de cada heroe para imprimir
+            asignar();
+            int pos = 0;
+            Turnos.cant_jugadores = 0;
+            while(Turnos.cant_jugadores < 4)
             {
-                Turnos.players[Turnos.cant_jugadores] = new List<int>();
-                if(Turnos.cant_jugadores > 4){
-                    Turnos.cant_jugadores--;
-                    AnsiConsole.MarkupLine("[red underline]Ya estan elegidos la máxima cantidad de guerreros, HA JUGAR[/]");
-                    return;
+                Console.Clear();
+                AnsiConsole.MarkupLine($"[yellow bold]Jugador {Turnos.cant_jugadores} elija su Héroe)[/]");
+//heroes a elegir
+                for(int j=0 ; j<8 ; j++)
+                {
+                    if(pos == j && v[pos] == false)Console.WriteLine($"> {heroes[j,0]}");
+                    if(pos == j && v[pos] == true)AnsiConsole.MarkupLine($"[strikethrough]> {heroes[j,0]}[/]");
+                    if(pos != j && v[j] == false)Console.WriteLine($"  {heroes[j,0]}");
+                    if(pos != j && v[j] == true)AnsiConsole.MarkupLine($"[strikethrough]  {heroes[j,0]}[/]");
                 }
-                Console.WriteLine();
-                AnsiConsole.MarkupLine($"[magenta bold]Jugador {Turnos.cant_jugadores} elija su Héroe tecleando su identificador(numero al lado del nombre del Héroe del 0 al 7)[/]");
-                char aux = Console.ReadKey(true).KeyChar;
-                if (aux >= '0' && aux < '8' && v[aux-'0'] == false){
-                    int num = aux - '0';
-                    Turnos.players[Turnos.cant_jugadores].Add(num);
-                    Pcs.pcs[num].jugador = Turnos.cant_jugadores;
-                    Pcs.pos_pcs_elegidos(Turnos.cant_jugadores,num);
-                    Pcs.pcs_principales[num] = true;
-                    v[num] = true;
-                    AnsiConsole.MarkupLine($"[blue]El jugador {Turnos.cant_jugadores} eligió a {Pcs.pcs[num].name}[/]");
-                    AnsiConsole.MarkupLine("[magenta bold]Presione `Tab´ para añadir otro jugador o `Esc´ para finalizar[/]");
-                    Turnos.cant_jugadores++;
-                    while(true){
-                        ConsoleKeyInfo tecla = Console.ReadKey(true);
-                        if(tecla.Key == ConsoleKey.Tab)
+                if(pos == 8)Console.WriteLine($"> Comenzar partida");
+                else Console.WriteLine($"  Comenzar partida");
+                if(pos == 9)Console.WriteLine($"> Salir al menú principal");
+                else Console.WriteLine($"  Salir al menú principal");
+//descripcion de los heroes
+                if(pos < 8)
+                {
+                    Console.WriteLine();
+                    for(int j=0 ; j<10 ; j++)Console.WriteLine(heroes[pos,j]);
+                }
+                while(true)
+                {
+                    ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    if(tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.DownArrow){
+                        pos++;
+                        if(pos > 9)pos = 0;
+                        break;
+                    }
+                    if(tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.UpArrow){
+                        pos--;
+                        if(pos < 0)pos = 9;
+                        break;
+                    }
+                    if(tecla.Key == ConsoleKey.Enter)
+                    {
+                        if(pos < 8)
                         {
+                            if(!v[pos])
+                            {
+                                Turnos.cant_jugadores++;
+                                Turnos.players[Turnos.cant_jugadores] = new List<int>();
+                                Turnos.players[Turnos.cant_jugadores].Add(pos);
+                                Pcs.pcs[pos].jugador = Turnos.cant_jugadores;
+                                Pcs.pos_pcs_elegidos(Turnos.cant_jugadores,pos);
+                                Pcs.pcs_principales[pos] = true;
+                                v[pos] = true;
+                            }
                             break;
                         }
-                        if(tecla.Key == ConsoleKey.Escape){
-                            Turnos.cant_jugadores--;
+                        if(pos == 8)
+                        {
+                            if(Turnos.cant_jugadores == 0)break;
+                            else
+                            {
+                                Turnos.turnos();
+                                return;
+                            }
+                        }
+                        if(pos == 9)
+                        {
+                            Turnos.players.Clear();
+                            menu();
                             return;
                         }
-                        AnsiConsole.MarkupLine("[red underline]Comando erroneo, intente nuevamente, solo puedes usar `Tabulador´ para añadir otro jugador y `Escape´ si ya todos estan listos para Ganar[/]");
                     }
-                }
-                else{
-                    AnsiConsole.MarkupLine("[red underline]El identificador no pertenece a la lista de Héroes o ya fue eligido por otro jugador, por favor elija otro[/]");
                 }
             }
         }
-        public static int menu()
+        public static void menu()
         {
             int inicio = Console.WindowWidth/2;
             Console.Clear();
+            int pos = 0;
             while(true)
             {
+                Console.Clear();
                 string aux = "Menus :";
                 Console.CursorLeft = inicio-(aux.Length/2);
-                AnsiConsole.MarkupLine($"[yellow underline bold]{aux}[/]");
-                aux = "1-  nuevo juego :";
+                Console.WriteLine(aux);
+                if(pos == 0)aux = "> nuevo juego :";
+                else aux = "  nuevo juego :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                AnsiConsole.MarkupLine($"[blue bold]{aux}[/]");
-                aux = "2-  Ver Héroes :";
+                Console.WriteLine(aux);
+                if(pos == 1)aux = "> Ver Historia :";
+                else aux = "  Ver Historia :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                AnsiConsole.MarkupLine($"[blue bold]{aux}[/]");
-                aux = "3-  Ver Historia :";
+                Console.WriteLine(aux);
+                if(pos == 2)aux = "> Como Jugar :";
+                else aux = "  Como Jugar :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                AnsiConsole.MarkupLine($"[blue bold]{aux}[/]");
-                aux = "4- Como Jugar :";
-                Console.CursorLeft = inicio - (aux.Length/2);
-                AnsiConsole.MarkupLine($"[blue bold]{aux}[/]");
+                Console.WriteLine(aux);
                 Console.WriteLine("\n\n\n");
-                aux = "5- Salir :";
+                if(pos == 3)aux = "> Salir :";
+                else aux = "  Salir :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                AnsiConsole.MarkupLine($"[red]{aux}[/]");
+                Console.WriteLine(aux);
                 Console.WriteLine();
                 while(true)
                 {
-                    aux = "Elija una opcion usando los números del 1-5";
-                    Console.CursorLeft = inicio - (aux.Length/2);
-                    AnsiConsole.MarkupLine($"[red]{aux}[/]");
-                    char opcion = Console.ReadKey(true).KeyChar;
-                    if(opcion == '5'){
-                        aux = "Saliendo.....";
-                        Console.CursorLeft = inicio - (aux.Length/2);
-                        AnsiConsole.MarkupLine($"[red]{aux}[/]");
-                        return 0;
-                    }
-                    if(opcion == '4'){
-                        como_jugar();
+                    ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    if(tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.DownArrow){
+                        pos++;
+                        if(pos > 3)pos = 0;
                         break;
                     }
-                    if(opcion == '3'){
-                        historia();
+                    if(tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.UpArrow){
+                        pos--;
+                        if(pos < 0)pos = 3;
                         break;
                     }
-                    if(opcion == '2'){
-                        héroes();
-                        break;
+                    if(tecla.Key == ConsoleKey.Enter)
+                    {
+                        if(pos == 0)
+                        {
+                            nuevo_juego();
+                            return;
+                        }
+                        if(pos == 1)historia();
+                        if(pos == 2)como_jugar();
+                        if(pos == 3)
+                        {
+                            aux = "Saliendo.....";
+                            Console.CursorLeft = inicio - (aux.Length/2);
+                            AnsiConsole.MarkupLine($"[red]{aux}[/]");
+                            return;
+                        }
                     }
-                    if(opcion == '1'){
-                        nuevo_juego();
-                        return 1;
-                    }
-                    AnsiConsole.MarkupLine("[yellow]Comando incorrecto[/]");
                 }
             }
         }
@@ -204,7 +211,7 @@ namespace Juego
             for(int i=0 ; i<8 ; i++)
             {
                 
-                heroes[i,0] = $"{Pcs.pcs[i].id} {Pcs.pcs[i].name} {Pcs.pcs[i].emoji}";
+                heroes[i,0] = $"{Pcs.pcs[i].name} {Pcs.pcs[i].emoji}";
                 heroes[i,3] = $"Puntos de Vida(HP): {Pcs.pcs[i].healthPoints}";
                 heroes[i,4] = $"Puntos de Fuerza(AP): {Pcs.pcs[i].attackPoints}";
                 heroes[i,5] = $"Rango de Ataque(R): {Pcs.pcs[i].range}";
@@ -252,7 +259,7 @@ namespace Juego
                 {
                     heroes[i,1] = "Nación: Rusia";
                     heroes[i,2] = "Descripción: Mutante con habilidades psíquicas, capaz de controlar la mente de otros. Lucha por la dominación y el control.";
-                    heroes[i,7] = "Habilidad Especial (A): Puede entrar en la mente de cualquier jugador y controlarlo temporalmente.";
+                    heroes[i,7] = "Habilidad Especial (A): Puede entrar en la mente de cualquier jugador y controlarlo durante un turno.";
                 }
                 if(Pcs.pcs[i].name == "Dante")
                 {
@@ -272,7 +279,7 @@ namespace Juego
         }
         private static string almacen5()
         {
-            return "El `Laberinto del Infierno´ es un juego multijugador para un máximo de 4 personas donde el deber de cada uno es llegar al centro del laberinto, ganarle a `Canserbero´ y llegar a su posición, para eso puedes tomar aliados parandote en las posiciones de héroes que no esten controlados por ningún jugador o luchar contra héroes que hayan tomado otros jugadores, ademas si mueres serás revivido en una posicion inicial dentro de 5 turnos pero perderas a todos los aliados que tengas, 👻 significa que hay un guardian 💀 más de uno, los guardianes merodean el laberitno, cuando todos los jugadores terminar sus turnos ellos atacan a una distancia maxima de 2, se mueven 3casillas y vuelven a atacar";
+            return "El `Laberinto del Infierno´ es un juego multijugador para un máximo de 4 personas donde el deber de cada uno es llegar al centro del laberinto, ganarle a `Canserbero´ y llegar a su posición, para eso puedes tomar aliados parandote en las posiciones de héroes que no esten controlados por ningún jugador o luchar contra héroes que hayan tomado otros jugadores, ademas si mueres serás revivido en una posicion inicial dentro de 5 turnos pero perderas a todos los aliados que tengas, 👻 significa que hay un guardian 💀 más de uno, los guardianes merodean el laberitno, cuando todos los jugadores terminar sus turnos ellos pueden atacar a una distancia maxima de 2 y moverse";
         }
     }
 }
