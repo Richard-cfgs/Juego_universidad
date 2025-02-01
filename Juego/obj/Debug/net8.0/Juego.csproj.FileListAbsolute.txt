@@ -30,3 +30,9 @@ D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\Spectre.Console.dll
 D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.AssemblyReference.cache
 D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.csproj.Up2Date
 D:\programacion\Juego_universidad\Juego\obj\Debug\net8.0\Juego.sourcelink.json
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\NAudio.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\NAudio.Asio.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\NAudio.Core.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\NAudio.Midi.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\NAudio.Wasapi.dll
+D:\programacion\Juego_universidad\Juego\bin\Debug\net8.0\NAudio.WinMM.dll

@@ -3,21 +3,19 @@ namespace Juego
     public class Npcs
     {
         public static int speed = 3;
-        public static int range = 2;
+        public static int range = 1;
         public static int fuerza = 5;
         public static int cant_npcs = 20;
         public static int[] m1 = new int[Npcs.cant_npcs];
         public static List<Npcs>npcs = new List<Npcs>();
         public static Dictionary<(int,int), List<int>> pos_npcs = new Dictionary<(int,int),List<int>>();
         public int healthPoints { get; set; } 
-        public int attackPoints { get; set; }
         public int posx { get; set; }
         public int posy { get; set; }
         public int direccion { get; set; }
-        public Npcs(int healthPoints, int attackPoints, int posx, int posy ,int d)
+        public Npcs(int healthPoints, int posx, int posy ,int d)
         {
             this.healthPoints = healthPoints;
-            this.attackPoints = attackPoints;
             this.posx = posx;
             this.posy = posy;
             direccion = d;
@@ -29,17 +27,21 @@ namespace Juego
             {   
 //elegir nuevas pos aleatorias 
                 Generacion_Aleatoria.generar(4,1);
-                npcs.Insert(i, new Npcs(5, 5, Generacion_Aleatoria.posx, Generacion_Aleatoria.posy, i%4));
+                npcs.Insert(i, new Npcs(10, Generacion_Aleatoria.posx, Generacion_Aleatoria.posy, i%4));
                 pos_npcs[(Generacion_Aleatoria.posx,Generacion_Aleatoria.posy)].Add(i);             
             }
         }
         public static void mover_npcs()
         {
+            bool[,] ya_atacaron = new bool[cant_npcs,Pcs.cant_pcs];
 //un for de 0 a 2 y en cada iteracion cada guardian da un paso  
             for(int q=0 ; q<speed ; q++){
 //un for hata la cantidad de guardianes y veo en q direccion puede dar el paso
                 for(int i=0 ; i<cant_npcs ; i++)
                 {
+                    if(npcs[i].healthPoints <= 0)continue;
+//en la primera iteracion reviso si puedo atacar a alguien
+                    if(q == 0)npcs_attack(ya_atacaron , i);
                     int x = npcs[i].posx + Laberinto.dx[npcs[i].direccion];
                     int y = npcs[i].posy + Laberinto.dy[npcs[i].direccion];
 //verifico si el movimiento es posible
@@ -68,57 +70,59 @@ namespace Juego
                         }
                     }
                     pos_npcs[(npcs[i].posx,npcs[i].posy)].Add(i);
+                    npcs_attack(ya_atacaron , i);
                 }
             }
         }
-        public static void npcs_attack(bool[] ya_atacaron)
+        public static void npcs_attack(bool[,] ya_atacaron , int id)
         {
-            bool[] restringir_ataque = new bool[5];
 //iterar por las pos a las que llega el ataque
             for(int i=0 ; i<=range ; i++)
             {
-//revisar a que personaje le llega
-                for(int j=0 ; j<Pcs.cant_pcs ; j++)
+//si el rango es 1 reviso si hay alguien en esa pos
+                int[] revisar = new int[8];
+                int count = 0;
+                if(i == 0)
                 {
-//si no pertenece a ningun jugador que no lo ataquen
-                    if(Pcs.pcs[j].jugador == 0)continue;
-                    if(Pcs.pcs[j].healthPoints <= 0)continue;
-//si el rango es 0 revisar esa pos sino reviso todas posibles para atacar
-                    if(i == 0)quitar_vida_npc(Pcs.pcs[j].posx , Pcs.pcs[j].posy , j , ya_atacaron , 0 , restringir_ataque);
-                    else{
-                        for(int q=0 ; q<4 ; q++)
-                        {    
-                            int x = Pcs.pcs[j].posx + Laberinto.dx[q]*i;
-                            int y = Pcs.pcs[j].posy + Laberinto.dy[q]*i;
-                            quitar_vida_npc(x,y,j,ya_atacaron,q,restringir_ataque);
+                    foreach(int id_pc in Pcs.pos_pcs[(npcs[id].posx , npcs[id].posy)])
+                    {
+                        if(Pcs.pcs[id_pc].jugador == 0)continue;
+                        if(Pcs.pcs[id_pc].healthPoints <= 0)continue;
+                        if( ya_atacaron[id,id_pc] )continue;
+                        ya_atacaron[id,id_pc] = true;
+                        Compilar.inf($"El Héroe {id_pc} ha sido atacado por los guardianes" , "yellow");
+                        Thread.Sleep(2000);
+                        Compilar.compilar(1,npcs[id].posx,npcs[id].posy);
+                        Thread.Sleep(2000);
+                        Pcs.pcs[id_pc].healthPoints -= fuerza;
+                        revisar[count++] = id_pc;
+                    }
+                }
+                else
+                {
+                    for(int j=0 ; j<4 ; j++)
+                    {
+                        int x = npcs[id].posx + Laberinto.dx[j];
+                        int y = npcs[id].posy + Laberinto.dy[j];
+                        if(Laberinto.verificar_pos(x,y) == 1)
+                        {
+                            foreach(int id_pc in Pcs.pos_pcs[(x,y)])
+                            {
+                                if(Pcs.pcs[id_pc].jugador == 0)continue;
+                                if(Pcs.pcs[id_pc].healthPoints <= 0)continue;
+                                if( ya_atacaron[id,id_pc] )continue;
+                                ya_atacaron[id,id_pc] = true;
+                                Compilar.inf($"El Héroe {id_pc} ha sido atacado por los guardianes" , "yellow");
+                                Thread.Sleep(2000);
+                                Compilar.compilar(1,npcs[id].posx,npcs[id].posy);
+                                Thread.Sleep(2000);
+                                Pcs.pcs[id_pc].healthPoints -= fuerza;
+                                revisar[count++] = id_pc;
+                            }
                         }
                     }
                 }
-            }
-        }
-        private static void quitar_vida_npc(int x , int y , int id , bool[] ya_atacaron , int direccion , bool[] restringir_ataque)
-        {
-            if(Laberinto.verificar_pos(x,y) == 1 && restringir_ataque[direccion] == false)
-            {
-                if(pos_npcs[(x,y)].Count != 0)
-                {
-                    foreach(int id_npc in pos_npcs[(x,y)])
-                    {
-                        if(ya_atacaron[id_npc] == true)continue;
-                        ya_atacaron[id_npc] = true;
-                        Compilar.inf($"El Héroe {id} ha sido atacado por los guardianes" , "yellow");
-                        Pcs.pcs[id].healthPoints -= fuerza;
-                        Actualizar.revisar_muerto(id,true,-1);
-                        Compilar.compilar(1,x,y);
-                        Thread.Sleep(2000);
-                        Compilar.compilar(1,Pcs.pcs[id].posx,Pcs.pcs[id].posy);
-                        Thread.Sleep(2000);
-                    }
-                }
-            }
-            else
-            {
-                restringir_ataque[direccion] = true;
+                for(int j=0 ; j<count ; j++)Actualizar.revisar_muerto(revisar[j] , true , -1);
             }
         }
     }

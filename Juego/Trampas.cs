@@ -28,9 +28,7 @@ namespace Juego
                     Pcs.pcs[iden_p].healthPoints /= 2;
                     Pcs.pcs[iden_p].attackPoints /= 2;
                     Pcs.pcs[iden_p].speed /= 2;
-//para que reducir la velocidad en el turno que esta jugando
-                    Turnos.speed /= 2;
-                    Pcs.pcs[iden_p].affectedTurns = 3 + 2;
+                    Pcs.pcs[iden_p].affectedTurns = 3;
                     Actualizar.revisar_muerto(iden_p , true , -1);
                 }
                 //sino solo le aumento 3 a los turnos afectados

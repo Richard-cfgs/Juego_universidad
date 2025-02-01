@@ -4,6 +4,10 @@
     {
         static void Main()
         {
+//cargar emojis en la 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+//ajustar la consola para que se vea bien el juego
+            Ajustar_pantalla.size();
 //crear laberinto
             Laberinto.crear();
 //inicializar lista de las pos de npsc y pcs
@@ -14,7 +18,7 @@
             Pcs.crear_pcs();
 //generar npsc aleatoriamente 
             Npcs.crear_npcs();
-//introduccion al juego
+//introduccion al juego y jugar
             Introduccion.menu();
         }
     }

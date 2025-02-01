@@ -4,7 +4,6 @@ namespace Juego
     {
         public static int pos_original_x = 0;
         public static int pos_original_y = 0;
-        public static bool super_salto = false;
         public static int[] d = {0,1,2,3};
         public static int cant_pcs = 8;
         public static bool[] pcs_principales = new bool[cant_pcs];
@@ -82,7 +81,7 @@ namespace Juego
                 }
                 if(id == 5){
                     //jugador de NBA, habilidad de saltar los muros del laberinto
-                    pcs.Insert(5, new Pcs(5, "🏀", "The Jumper Smith", 10, 1, 0, 5, 1, 0, 0, 0, 0, x, y, 0));
+                    pcs.Insert(5, new Pcs(5, "🏀", "The Jumper Smith", 10, 1, 0, 5, 1, 0, 1, 0, 0, x, y, 0));
                 }
                 if(id == 6){
                     //mutante, habilidad de entrar a la mente de cualquier jugador y controlarlo 
@@ -136,7 +135,7 @@ namespace Juego
             {
                 while(true)
                 {
-                    Compilar.inf("elija id del Héroe a teletransportar o 8 para cancelar" , "magenta");
+                    Compilar.inf("elija id del Héroe a teletransportar(número junto a su emoji) o 8 para cancelar" , "magenta");
                     char aux = Console.ReadKey(true).KeyChar;
                     if(aux == '8')return;
                     if(aux >= '0' && aux < '8')
@@ -183,10 +182,6 @@ namespace Juego
                             }
                         }
                     }
-                    else{
-                        Compilar.inf("id erroneo, presiona Enter para continuar" , "red");
-                        Actualizar.continuar();
-                    }
                 }
             }
             if(id == 3){
@@ -198,14 +193,11 @@ namespace Juego
                 pcs[id].healthPoints += 5;
                 pcs[id].attackPoints += 5;
                 pcs[id].speed += 6;
-//para que pueda seguir caminando en el turno en el que está
-                Turnos.speed += 6;
                 pcs[id].abilityTime = pcs[id].abilityTimeOriginal;
                 pcs[id].downTime = pcs[id].downTimeOriginal;
                 }
             if(id == 5)
             {
-                if( super_salto )return;
                 while(true)
                 {
                     Compilar.inf("presione una tecla de movimiento para dar el super salto de dos casillas de distancia o Esc para cancelar" , "magenta");
@@ -222,7 +214,6 @@ namespace Juego
                         pos_pcs[(pcs[id].posx , pcs[id].posy)].Add(id);
                         pcs[id].abilityTime = pcs[id].abilityTimeOriginal;
                         pcs[id].downTime = pcs[id].downTimeOriginal;
-                        super_salto = true;
                         Actualizar.tomar_pcs(5);
                         Trampas.caer_trampa(5);
                         return;
@@ -234,7 +225,7 @@ namespace Juego
             {
                 while(true)
                 {
-                    Compilar.inf("elige el id del jugador que quieres controlar o 8 para cancelar" , "magenta");
+                    Compilar.inf("elige el id(número junto al jugador) del jugador que quieres controlar o 8 para cancelar" , "magenta");
                     char index = Console.ReadKey(true).KeyChar;
                     if(index == '8')return;
                     char aux = '0';
@@ -244,13 +235,11 @@ namespace Juego
                     if(Turnos.cant_jugadores == 4)aux = '4';
                     if(index > '0' && index <= aux)
                     {
-                        Turnos.hacer_mov(index - '0');
                         pcs[id].abilityTime = pcs[id].abilityTimeOriginal;
                         pcs[id].downTime = pcs[id].downTimeOriginal;
+                        Turnos.hacer_mov(index - '0');
                         return;
                     }
-                    Compilar.inf("Jugador inexistente, presione Enter para continuar" , "red");
-                    Actualizar.continuar();
                 }   
             }
             if(id == 7)
@@ -259,18 +248,15 @@ namespace Juego
                 pcs[id].downTime = pcs[id].downTimeOriginal;
                 for(int i=0 ; i<Npcs.cant_npcs ; i++)
                 {
+                    if(Npcs.npcs[i].healthPoints <= 0)continue;
                     int count_pasos = 0;
                     while(true)
                     {
                         Compilar.compilar(1 , Npcs.npcs[i].posx , Npcs.npcs[i].posy);
-                        Compilar.inf("elige un comando de moverte para mover el guaridan señalado(W,S,A,D), Enter para pasar de guardian o Esc para terminar" , "magenta");
+                        Compilar.inf("elige un comando de movimiento para mover el guaridan señalado, Enter para pasar de guardian o Esc para terminar" , "magenta");
                         ConsoleKeyInfo tecla = Console.ReadKey(true);
                         int x1 = 0, y1 = 0;
-                        if(count_pasos == Npcs.speed){
-                            Compilar.inf("el guardian ya ha dado el max de pasos, presiona Enter para continuar" , "red");
-                            Actualizar.continuar();
-                            break;
-                        }
+                        if(count_pasos == Npcs.speed)break;
                         if(tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.UpArrow)x1--;
                         if(tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.DownArrow)x1++;
                         if(tecla.Key == ConsoleKey.D || tecla.Key == ConsoleKey.RightArrow)y1++;
@@ -291,24 +277,15 @@ namespace Juego
 //usar la habilidad del pc1, veo todas las pos vecinas de donde cae la granada y en ella misma y quito vida 
         private static void abilidad_pc0(int x , int y)
         {
-            bool v = false;
             for(int i=0 ; i<=4 ; i++)
             {
                 int x1 , y1 , daño;
                 if(i == 4){x1 = x;y1 = y;daño = 20;}
                 else{x1 = x + Laberinto.dx[i];y1 = y + Laberinto.dy[i];daño = 10;}
                 quitar_HP(x1,y1,daño,0);
-                if(Laberinto.verificar_pos(x1,y1) != -1)v = true;
             }
-            if(v == false){
-                Compilar.inf("explocion de granada fuera del laberinto, presione enter para continuar" , "yellow");
-                Actualizar.continuar();
-            }
-            else
-            {
-                Compilar.compilar(3,x,y);
-                Thread.Sleep(2000);
-            }
+            Compilar.compilar(3,x,y);
+            Thread.Sleep(2000);
         }
 //usar la habilidad del pc 1,itero desde la ultima posicion que puede llegar el pc para revisar cual es la max y despues voy caminando desde 0 hasta la maxima quitando vida a los enemigos
         private static void abilidad_pc1(int x , int y)
@@ -349,16 +326,19 @@ namespace Juego
             if(x1 == Laberinto.size/2 && y1 == Laberinto.size/2){
                     Canserbero.healthPoints_canserbero -= daño;
                     Canserbero.revisar_muerto_canserbero(id_asesino);
-                }
+            }
             if(Laberinto.verificar_pos(x1,y1) == 1){
                 if(pos_pcs[(x1,y1)].Count != 0)
                 {
+                    int[] revisar = new int[8];
+                    int count = 0;
                     for(int j=0 ; j<pos_pcs[(x1,y1)].Count ; j++)
                     {
                         int index = pos_pcs[(x1,y1)][j];
                         pcs[index].healthPoints -= daño;
-                        Actualizar.revisar_muerto(index,true,id_asesino);
+                        revisar[count++] = index;
                     }                
+                    for(int j=0 ; j<count ; j++)Actualizar.revisar_muerto(revisar[j] , true , id_asesino);
                 }
                 if(Npcs.pos_npcs[(x1,y1)].Count != 0)
                 {

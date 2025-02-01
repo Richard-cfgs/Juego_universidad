@@ -12,7 +12,6 @@ namespace Juego
             {
                 for(int j=0 ; j<Laberinto.size ; j++)
                 {
-                    //Console.SetCursorPosition(j , j);
                     if(tipo == 1 && x == i && y == j)Console.Write("⬜"); 
                     else
                     {
@@ -30,14 +29,11 @@ namespace Juego
                                 if(i == j && i == Laberinto.size/2)
                                 {
                                     if(Pcs.pos_pcs[(i,j)].Count == 0)Console.Write("👾");
-                                    else Console.Write("⚔️");
+                                    else Console.Write("🎆");
                                 }
                                 else{
                                     if(Laberinto.mat[i,j] == 0)
                                     {
-                                        if(Pcs.pos_pcs.ContainsKey((i,j)) == true)Console.WriteLine("error1");
-                                        if(Npcs.pos_npcs.ContainsKey((i,j)) == true)Console.WriteLine("error2");
-                                        if(Trampas.trampa[i,j] != 0)Console.WriteLine("error3");
                                         if(i == 0 || i == Laberinto.size-1 || j == 0 || j == Laberinto.size-1)Console.Write("🟨");
                                         else Console.Write("🟥");
                                     }
@@ -45,11 +41,11 @@ namespace Juego
                                     {
                                         if(Pcs.pos_pcs[(i,j)].Count >= 1)
                                         {
-                                            if(Npcs.pos_npcs[(i,j)].Count >= 1)Console.Write("⚔️ ");
+                                            if(Npcs.pos_npcs[(i,j)].Count >= 1)Console.Write("🎆");
                                             else{
                                                 for(int q=0 ; q<Pcs.pos_pcs[(i,j)].Count ; q++){
                                                     if(Pcs.pos_pcs[(i,j)][0] != Pcs.pos_pcs[(i,j)][q]){
-                                                        Console.Write("⚔️ ");
+                                                        Console.Write("🎆");
                                                         break;
                                                     }
                                                     else if(q == Pcs.pos_pcs[(i,j)].Count-1)Console.Write(Pcs.pcs[Pcs.pos_pcs[(i,j)][0]].emoji);
@@ -62,7 +58,7 @@ namespace Juego
                                                 if(Npcs.pos_npcs[(i,j)].Count == 1)Console.Write("👻");
                                                 if(Npcs.pos_npcs[(i,j)].Count > 1)Console.Write("💀");
                                             }
-                                            else Console.Write("⬛");
+                                            else Console.Write("  ");
                                         }
                                     }
                                 }
@@ -81,54 +77,61 @@ namespace Juego
             for(int i=1 ; i<=Turnos.cant_jugadores ; i++)
             {
                 Console.SetCursorPosition(inicio_x,inicio_y);
-                Console.Write($"Jugador {i} - Héroes: ");
+                AnsiConsole.Markup($"[blue]Jugador {i} - Héroes: [/]");
                 foreach(int id in Turnos.players[i])
                 {
-                    if(p == id)AnsiConsole.Markup($"[underline]{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} [/]");
-                    else Console.Write($"{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} ");
+                    if(p == id || Turnos.personaje_en_juego == id)AnsiConsole.Markup($"[yellow underline]{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} [/]");
+                    else AnsiConsole.Markup($"[blue]{Pcs.pcs[id].id}{Pcs.pcs[id].emoji} [/]");
                 }
                 inicio_y++;
             }
             inicio_y++;
             Console.SetCursorPosition(inicio_x,inicio_y);
-            Console.WriteLine($"Canserbero.HP: {Canserbero.healthPoints_canserbero}");
+            AnsiConsole.MarkupLine($"[blue]Canserbero.HP: {Canserbero.healthPoints_canserbero}[/]");
             inicio_y++;
             for(int id=0 ; id < Pcs.cant_pcs ; id++)
             {
                 Console.SetCursorPosition(inicio_x, inicio_y + 1);
-                Console.WriteLine($"Héroe:{Pcs.pcs[id].id} {Pcs.pcs[id].emoji}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 2);
-                Console.WriteLine($"HP: {Pcs.pcs[id].healthPoints}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 3);
-                Console.WriteLine($"AP: {Pcs.pcs[id].attackPoints}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 4);
-                Console.WriteLine($"R: {Pcs.pcs[id].range}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 5);
-                if(Turnos.personaje_en_juego == id)
+                if(Turnos.personaje_en_juego == id)AnsiConsole.MarkupLine($"[yellow underline]Héroe:{Pcs.pcs[id].id} {Pcs.pcs[id].emoji}[/]");
+                else AnsiConsole.MarkupLine($"[blue]Héroe:{Pcs.pcs[id].id} {Pcs.pcs[id].emoji}[/]");
+                if(Pcs.pcs[id].healthPoints > 0)
                 {
-                    if(Pcs.pcs[id].speed - Turnos.count_mov < 0)Console.WriteLine($"S: {0}");
-                    else Console.WriteLine($"S: {Pcs.pcs[id].speed - Turnos.count_mov}");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 2);
+                    AnsiConsole.MarkupLine($"[blue]HP: {Pcs.pcs[id].healthPoints}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 3);
+                    AnsiConsole.MarkupLine($"[blue]AP: {Pcs.pcs[id].attackPoints}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 4);
+                    AnsiConsole.MarkupLine($"[blue]R: {Pcs.pcs[id].range}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 5);
+                    if(Turnos.personaje_en_juego == id)
+                    {
+                        if(Pcs.pcs[id].speed - Turnos.count_mov <= 0)AnsiConsole.MarkupLine($"[red]S: {0}[/]");
+                        else AnsiConsole.MarkupLine($"[blue]S: {Pcs.pcs[id].speed - Turnos.count_mov}[/]");
+                    }
+                    else AnsiConsole.MarkupLine($"[blue]S: {Pcs.pcs[id].speed}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 6);
+                    if(id == 0)AnsiConsole.MarkupLine($"[blue]H: Lanzar Granadas[/]");
+                    if(id == 1)AnsiConsole.MarkupLine($"[blue]H: Impulso[/]");
+                    if(id == 2)AnsiConsole.MarkupLine($"[blue]H: T_Transportacion[/]");
+                    if(id == 3)AnsiConsole.MarkupLine($"[blue]H: Endurecimiento[/]");
+                    if(id == 4)AnsiConsole.MarkupLine($"[blue]H: Transformacion[/]");
+                    if(id == 5)AnsiConsole.MarkupLine($"[blue]H: Super Salto[/]");
+                    if(id == 6)AnsiConsole.MarkupLine($"[blue]H: Control Mental[/]");
+                    if(id == 7)AnsiConsole.MarkupLine($"[blue]H: Orden[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 7);
+                    if(Pcs.pcs[id].affectedTurns != 0)AnsiConsole.MarkupLine($"[red]Affected Turns: {Pcs.pcs[id].affectedTurns}[/]");
+                    else AnsiConsole.MarkupLine($"[blue]Affected Turns: {Pcs.pcs[id].affectedTurns}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 8);
+                    AnsiConsole.MarkupLine($"[blue]AT Original: {Pcs.pcs[id].abilityTimeOriginal}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 9);
+                    if(Pcs.pcs[id].abilityTime != 0)AnsiConsole.MarkupLine($"[red]AT Actual: {Pcs.pcs[id].abilityTime}[/]");
+                    else AnsiConsole.MarkupLine($"[blue]AT Actual: {Pcs.pcs[id].abilityTime}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 10);
+                    AnsiConsole.MarkupLine($"[blue]DT Original: {Pcs.pcs[id].downTimeOriginal}[/]");
+                    Console.SetCursorPosition(inicio_x, inicio_y + 11);
+                    if(Pcs.pcs[id].downTime != 0)AnsiConsole.MarkupLine($"[red]DT Actual: {Pcs.pcs[id].downTime}[/]");
+                    else AnsiConsole.MarkupLine($"[blue]DT Actual: {Pcs.pcs[id].downTime}[/]");
                 }
-                else Console.WriteLine($"S: {Pcs.pcs[id].speed}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 6);
-                if(id == 0)Console.WriteLine($"H: Lanzar Granadas");
-                if(id == 1)Console.WriteLine($"H: Impulso");
-                if(id == 2)Console.WriteLine($"H: T_Transportacion");
-                if(id == 3)Console.WriteLine($"H: Endurecimiento");
-                if(id == 4)Console.WriteLine($"H: Transformacion");
-                if(id == 5)Console.WriteLine($"H: Super Salto");
-                if(id == 6)Console.WriteLine($"H: Control Mental");
-                if(id == 7)Console.WriteLine($"H: Orden");
-                Console.SetCursorPosition(inicio_x, inicio_y + 7);
-                Console.WriteLine($"Affected Turns: {Pcs.pcs[id].affectedTurns}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 8);
-                Console.WriteLine($"AT Original: {Pcs.pcs[id].abilityTimeOriginal}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 9);
-                Console.WriteLine($"AT Actual: {Pcs.pcs[id].abilityTime}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 10);
-                Console.WriteLine($"DT Original: {Pcs.pcs[id].downTimeOriginal}");
-                Console.SetCursorPosition(inicio_x, inicio_y + 11);
-                Console.WriteLine($"DT Actual: {Pcs.pcs[id].downTime}");
                 inicio_x += 23;
                 if(id == 3){inicio_y += 13; inicio_x = laberinto_ancho*2;}
             }
@@ -164,82 +167,5 @@ namespace Juego
                 if(y == 34)return;
             }
         }        
-/**
-//muro
-                    if(Laberinto.mat[i,j] == 0)
-                    {   
-                        if(Pcs.pos_pcs.ContainsKey((i,j)) == true)Console.WriteLine("error");
-                        if(Npcs.pos_npcs.ContainsKey((i,j)) == true)Console.WriteLine("error");
-                        if(Trampas.trampa[i,j] != 0)Console.WriteLine("error");
-                        AnsiConsole.Markup("[red]#   [/]");
-                    }
-//camino
-                    else
-                    {
-//camino , personaje
-                        if(Pcs.pos_pcs[(i,j)].Count != 0)
-                        {
-//camino , personaje , guardian
-                            if(Npcs.pos_npcs[(i,j)].Count != 0)
-                            {
-//camino , personaje , guardian , trampa
-                                if(Trampas.trampa[i,j] != 0)
-                                {
-                                    AnsiConsole.Markup("[green]pgt [/]");
-                                }
-//camino , personaje , guardian , no trampa
-                                else
-                                {
-                                    AnsiConsole.Markup("[green]pg  [/]");   
-                                }
-                            }
-//camino , personaje , no guardian
-                            else
-                            {
-//camino , personaje , no guardian , trampa
-                                if(Trampas.trampa[i,j] != 0)
-                                {
-                                    AnsiConsole.Markup("[yellow]pt  [/]");
-                                }
-//camino , personaje , no guardian , no trampa
-                                else
-                                {
-                                    AnsiConsole.Markup("[yellow]p   [/]");
-                                }
-                            }
-                        }
-//camino , no personaje
-                        else
-                        {
-//camino , no personaje , guardian
-                            if(Npcs.pos_npcs[(i,j)].Count != 0)
-                            {
-//camino , no personaje , guardian , trampa
-                                if(Trampas.trampa[i,j] != 0)
-                                {
-                                    AnsiConsole.Markup("[blue]gt  [/]");
-                                }
-//camino , no personaje , guardian , no trampas
-                                else
-                                {
-                                    AnsiConsole.Markup("[blue]g   [/]");
-                                }
-                            }
-//camino , no personaje , no guardian , trampas
-                            else
-                            {
-                                if(Trampas.trampa[i,j] != 0)
-                                {
-                                    Console.Write("t   ");
-                                }
-//camino , no personaje , no guardian , no trampa
-                                else
-                                {
-                                    Console.Write("    ");
-                                }
-                            }
-                        }
-                    }
-                    **/
     }
 }

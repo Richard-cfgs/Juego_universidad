@@ -8,10 +8,8 @@ namespace Juego
         private static void historia()
         {
 //introduccion a la trampa del juego
-            string txt1 = almacen1();
-            string txt2 = almacen2();            
-            Escribir(txt1, 0);
-            Escribir(txt2, 0);
+            AnsiConsole.MarkupLine($"[blue]{almacen1()}[/]");
+            AnsiConsole.MarkupLine($"[blue]{almacen2()}[/]");
             Console.WriteLine();
             AnsiConsole.MarkupLine("[magenta bold]Presione Esc para regresar al Menu[/]");
             while(true)
@@ -30,8 +28,20 @@ namespace Juego
         }
         private static void como_jugar()
         {
-            string txt1 = almacen5();
-            Escribir(txt1, 0);
+            AnsiConsole.MarkupLine($"[blue]{almacen5()}[/]");
+            AnsiConsole.MarkupLine($"[yellow underline]Guardianes:[/]");  
+            AnsiConsole.MarkupLine($"[blue]{almacen6()}[/]");
+            AnsiConsole.MarkupLine($"[yellow underline]Controles:[/]");  
+            AnsiConsole.MarkupLine($"[blue]Puedes hacer un ataque por turnos.[/]");
+            AnsiConsole.MarkupLine($"[blue underline]Moverse:[/]");  
+            AnsiConsole.MarkupLine($"[blue]Arriba(W - flecha superior↑).[/]");  
+            AnsiConsole.MarkupLine($"[blue]Abajo(S - flecha inferior↓).[/]");  
+            AnsiConsole.MarkupLine($"[blue]Derecha(D - flecha derecha→).[/]");
+            AnsiConsole.MarkupLine($"[blue]Izquierda(A - flecha izquierda←).[/]");
+            AnsiConsole.MarkupLine($"[blue]Atacar(Barra Espaciadora).[/]");
+            AnsiConsole.MarkupLine($"[blue]Habilidad(Enter).[/]");
+            AnsiConsole.MarkupLine($"[blue]Cancelar o Terminar Turno(Escape).[/]");
+            AnsiConsole.MarkupLine($"[blue]Intercambiar de Héroe(A-flecha izquierda←) o (D-flecha derecha→) Elegir Héroe(Enter)).[/]");
             Console.WriteLine();
             AnsiConsole.MarkupLine("[magenta bold]Presione Esc para regresar al Menu[/]");
             while(true)
@@ -42,27 +52,6 @@ namespace Juego
                     return;
                 }
             }
-        }
-//escribir los textos con un retraso para simular que se van escribiendo
-        private static void Escribir(string texto, int tipo)
-        {
-            int ancho = Console.WindowWidth;
-            bool v = false;
-            foreach (char x in texto)
-            {
-                if(tipo == 0)AnsiConsole.Markup($"[blue]{x}[/]");
-                if(tipo == 1)AnsiConsole.Markup($"[yellow italic]{x}[/]");
-                if(tipo == 2)AnsiConsole.Markup($"[cyan]{x}[/]");
-                if(tipo == 3)AnsiConsole.Markup($"[yellow]{x}[/]");
-                //Thread.Sleep(00000001);
-                if(v == true && x == ' ')
-                {
-                    Console.WriteLine();
-                    v = false;
-                }
-                if(Console.CursorLeft + 15 > ancho)v = true;
-            }
-            Console.WriteLine();
         }
         private static void elegir_pc_iniciales()
         {
@@ -77,36 +66,34 @@ namespace Juego
             while(Turnos.cant_jugadores < 4)
             {
                 Console.Clear();
-                AnsiConsole.MarkupLine($"[yellow bold]Jugador {Turnos.cant_jugadores} elija su Héroe)[/]");
+                AnsiConsole.MarkupLine($"[yellow bold]Jugador {Turnos.cant_jugadores+1} elija su Héroe[/]");
 //heroes a elegir
                 for(int j=0 ; j<8 ; j++)
                 {
-                    if(pos == j && v[pos] == false)Console.WriteLine($"> {heroes[j,0]}");
-                    if(pos == j && v[pos] == true)AnsiConsole.MarkupLine($"[strikethrough]> {heroes[j,0]}[/]");
-                    if(pos != j && v[j] == false)Console.WriteLine($"  {heroes[j,0]}");
-                    if(pos != j && v[j] == true)AnsiConsole.MarkupLine($"[strikethrough]  {heroes[j,0]}[/]");
+                    if(pos == j && v[pos] == false)AnsiConsole.MarkupLine($"[blue]> {heroes[j,0]}[/]");
+                    if(pos == j && v[pos] == true)AnsiConsole.MarkupLine($"[blue strikethrough]> {heroes[j,0]}[/]");
+                    if(pos != j && v[j] == false)AnsiConsole.MarkupLine($"[blue]  {heroes[j,0]}[/]");
+                    if(pos != j && v[j] == true)AnsiConsole.MarkupLine($"[blue strikethrough]  {heroes[j,0]}[/]");
                 }
-                if(pos == 8)Console.WriteLine($"> Comenzar partida");
-                else Console.WriteLine($"  Comenzar partida");
-                if(pos == 9)Console.WriteLine($"> Salir al menú principal");
-                else Console.WriteLine($"  Salir al menú principal");
+                if(pos == 8)AnsiConsole.MarkupLine("[blue]> Comenzar partida[/]");
+                else AnsiConsole.MarkupLine($"[blue]  Comenzar partida[/]");
 //descripcion de los heroes
                 if(pos < 8)
                 {
                     Console.WriteLine();
-                    for(int j=0 ; j<10 ; j++)Console.WriteLine(heroes[pos,j]);
+                    for(int j=0 ; j<10 ; j++)AnsiConsole.MarkupLine($"[blue]{heroes[pos,j]}[/]");
                 }
                 while(true)
                 {
                     ConsoleKeyInfo tecla = Console.ReadKey(true);
                     if(tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.DownArrow){
                         pos++;
-                        if(pos > 9)pos = 0;
+                        if(pos > 8)pos = 0;
                         break;
                     }
                     if(tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.UpArrow){
                         pos--;
-                        if(pos < 0)pos = 9;
+                        if(pos < 0)pos = 8;
                         break;
                     }
                     if(tecla.Key == ConsoleKey.Enter)
@@ -134,56 +121,57 @@ namespace Juego
                                 return;
                             }
                         }
-                        if(pos == 9)
-                        {
-                            Turnos.players.Clear();
-                            menu();
-                            return;
-                        }
                     }
                 }
             }
         }
         public static void menu()
         {
-            int inicio = Console.WindowWidth/2;
             Console.Clear();
+            int inicio = Console.WindowWidth/2;
             int pos = 0;
             while(true)
             {
                 Console.Clear();
+//imrpimir representacion
+                AnsiConsole.MarkupLine("[blue]                                                                                                                                                                                    [/]");
+                AnsiConsole.MarkupLine("[blue]                                 ,,                                                                                                     ,.                                          [/]");
+                AnsiConsole.MarkupLine("[blue]`7MMF'     A     `7MF'         `7MM                                                    MMP''MM''YMM               `7MMF'              .d'                                           [/]");
+                AnsiConsole.MarkupLine("[blue]  `MA     ,MA     ,V             MM                                                    P'   MM   `7                 MM                dM`                                           [/]");
+                AnsiConsole.MarkupLine("[blue]   VM:   ,VVM:   ,V    .gP'Ya    MM   ,p6'bo   ,pW'Wq.  `7MMpMMMb.pMMMb.   .gP'Ya           MM       ,pW'Wq.        MM  `7MMpMMMb.   mMMmm   .gP'Ya  `7Mb,od8 `7MMpMMMb.   ,pW'Wq.  [/]");
+                AnsiConsole.MarkupLine("[blue]    MM.  M' MM.  M'   ,M'   Yb   MM  6M'  OO  6W'   `Wb   MM    MM    MM  ,M'   Yb          MM      6W'   `Wb       MM    MM    MM    MM    ,M'   Yb   MM' ''   MM    MM  6W'   `Wb[/]");
+                AnsiConsole.MarkupLine("[blue]    `MM A'  `MM A'    8M''''''   MM  8M       8M     M8   MM    MM    MM  8M''''''          MM      8M     M8       MM    MM    MM    MM    8M''''''   MM       MM    MM  8M     M8 [/]");
+                AnsiConsole.MarkupLine("[blue]     :MM;    :MM;     YM.    ,   MM  YM.    , YA.   ,A9   MM    MM    MM  YM.    ,          MM      YA.   ,A9       MM    MM    MM    MM    YM.    ,   MM       MM    MM  YA.   ,A9 [/]");
+                AnsiConsole.MarkupLine("[blue]      VF      VF       `Mbmmd' .JMML. YMbmd'   `Ybmd9'  .JMML  JMML  JMML. `Mbmmd'        .JMML.     `Ybmd9'      .JMML..JMML  JMML..JMML.   `Mbmmd' .JMML.   .JMML  JMML. `Ybmd9'  [/]");
+                AnsiConsole.MarkupLine("[blue]                                                                                                                                                                                    [/]");
+                Console.WriteLine("\n\n\n");
+//imprimir menu
                 string aux = "Menus :";
                 Console.CursorLeft = inicio-(aux.Length/2);
-                Console.WriteLine(aux);
-                if(pos == 0)aux = "> nuevo juego :";
-                else aux = "  nuevo juego :";
+                AnsiConsole.MarkupLine($"[yellow underline]{aux}[/]");
+                if(pos == 0)aux = "> Nuevo Juego :";
+                else aux = "  Nuevo Juego :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                Console.WriteLine(aux);
+                AnsiConsole.MarkupLine($"[blue]{aux}[/]");
                 if(pos == 1)aux = "> Ver Historia :";
                 else aux = "  Ver Historia :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                Console.WriteLine(aux);
+                AnsiConsole.MarkupLine($"[blue]{aux}[/]");
                 if(pos == 2)aux = "> Como Jugar :";
                 else aux = "  Como Jugar :";
                 Console.CursorLeft = inicio - (aux.Length/2);
-                Console.WriteLine(aux);
-                Console.WriteLine("\n\n\n");
-                if(pos == 3)aux = "> Salir :";
-                else aux = "  Salir :";
-                Console.CursorLeft = inicio - (aux.Length/2);
-                Console.WriteLine(aux);
-                Console.WriteLine();
+                AnsiConsole.MarkupLine($"[blue]{aux}[/]");
                 while(true)
                 {
                     ConsoleKeyInfo tecla = Console.ReadKey(true);
                     if(tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.DownArrow){
                         pos++;
-                        if(pos > 3)pos = 0;
+                        if(pos > 2)pos = 0;
                         break;
                     }
                     if(tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.UpArrow){
                         pos--;
-                        if(pos < 0)pos = 3;
+                        if(pos < 0)pos = 2;
                         break;
                     }
                     if(tecla.Key == ConsoleKey.Enter)
@@ -195,13 +183,6 @@ namespace Juego
                         }
                         if(pos == 1)historia();
                         if(pos == 2)como_jugar();
-                        if(pos == 3)
-                        {
-                            aux = "Saliendo.....";
-                            Console.CursorLeft = inicio - (aux.Length/2);
-                            AnsiConsole.MarkupLine($"[red]{aux}[/]");
-                            return;
-                        }
                     }
                 }
             }
@@ -216,7 +197,7 @@ namespace Juego
                 heroes[i,4] = $"Puntos de Fuerza(AP): {Pcs.pcs[i].attackPoints}";
                 heroes[i,5] = $"Rango de Ataque(R): {Pcs.pcs[i].range}";
                 heroes[i,6] = $"Distancia Máxima por Movimiento(S): {Pcs.pcs[i].speed}";
-                heroes[i,8] = $"Tiempo de Duración(AT): {Pcs.pcs[i].abilityTime}";
+                heroes[i,8] = $"Tiempo de Duración(AT): {Pcs.pcs[i].abilityTimeOriginal}";
                 heroes[i,9] = $"Tiempo de Enfriamiento(DT): {Pcs.pcs[i].downTimeOriginal}";
                 if(Pcs.pcs[i].name == "Jake Thompson")
                 {
@@ -259,7 +240,7 @@ namespace Juego
                 {
                     heroes[i,1] = "Nación: Rusia";
                     heroes[i,2] = "Descripción: Mutante con habilidades psíquicas, capaz de controlar la mente de otros. Lucha por la dominación y el control.";
-                    heroes[i,7] = "Habilidad Especial (A): Puede entrar en la mente de cualquier jugador y controlarlo durante un turno.";
+                    heroes[i,7] = "Habilidad Especial (A): Puede entrar en la mente de cualquier jugador y controlarlo pero no puedes moverte más durante ese turno al usar la habilidad ya que es muy agotadora.";
                 }
                 if(Pcs.pcs[i].name == "Dante")
                 {
@@ -271,15 +252,19 @@ namespace Juego
         }
         private static string almacen1()
         {
-            return "En las profundidades del infierno, más allá de los ríos de lava y las montañas de ceniza, se encuentra un laberinto legendario conocido como ``El Laberinto del Infierno´´. Este lugar no es un simple laberinto; es una prisión eterna custodiada por Canserbero, el temible perro de tres cabezas que protege una fuente de poder inmensa en su centro. Se dice que quien controle esta fuente obtendrá un poder capaz de alterar el destino de los mundos.";
+            return "En las profundidades del infierno, más allá de los ríos de lava y las montañas de ceniza, se encuentra un laberinto legendario conocido como ``El Laberinto del Infierno´´. Este lugar no es un simple laberinto, es una prisión eterna custodiada por Canserbero`👾´, el temible perro de tres cabezas que protege una fuente de poder inmensa en su centro. Se dice que quien controle esta fuente obtendrá un poder capaz de alterar el destino de los mundos.";
         }
         private static string almacen2()
         {
-            return "Las naciones del mundo han descubierto la existencia de esta fuente y, movidas por la ambición, han enviado a sus mejores guerreros para reclamarla. Cada uno de estos héroes tiene habilidades únicas y una misión clara: llegar al centro del laberinto, derrotar a Canserbero y obtener el poder para su nación. Sin embargo, el laberinto está lleno de criaturas infernales, trampas mortales y enigmas imposibles. Además, Dante, un demonio que escapó del infierno, también busca la fuente para convertirse en el nuevo guardián y destronar a Canserbero.";
+            return "Las naciones del mundo han descubierto la existencia de esta fuente y, movidas por la ambición, han enviado a sus mejores guerreros para reclamarla. Cada uno de estos héroes tiene habilidades únicas y una misión clara: llegar al centro del laberinto, derrotar a Canserbero y obtener el poder para su nación. Sin embargo, el laberinto está lleno de criaturas infernales y trampas mortales. Además, Dante, un demonio que escapó del infierno, también busca la fuente para convertirse en el nuevo guardián y destronar a Canserbero.";
         }
         private static string almacen5()
         {
-            return "El `Laberinto del Infierno´ es un juego multijugador para un máximo de 4 personas donde el deber de cada uno es llegar al centro del laberinto, ganarle a `Canserbero´ y llegar a su posición, para eso puedes tomar aliados parandote en las posiciones de héroes que no esten controlados por ningún jugador o luchar contra héroes que hayan tomado otros jugadores, ademas si mueres serás revivido en una posicion inicial dentro de 5 turnos pero perderas a todos los aliados que tengas, 👻 significa que hay un guardian 💀 más de uno, los guardianes merodean el laberitno, cuando todos los jugadores terminar sus turnos ellos pueden atacar a una distancia maxima de 2 y moverse";
+            return "Juego: El `Laberinto del Infierno´ es un juego multijugador para un máximo de 4 personas donde el deber de cada uno es llegar al centro del laberinto y ganarle a `Canserbero👾´, para eso puedes tomar aliados parandote en las posiciones de héroes que no esten controlados por ningún jugador o luchar contra héroes que hayan tomado otros jugadores y así en tú turno poder usar a cualquiera que esté en tu poseción, ademas si mueres serás revivido en una posicion inicial dentro de 5 turnos pero perderas a todos los aliados que tengas";
+        }
+        private static string almacen6()
+        {
+            return "`👻´ significa que hay un guardian `💀´ más de uno y `🎆´ que hay más de un pc o, hay pc y npcs, los guardianes merodean el laberitno y cuando todos los jugadores terminar sus turnos ellos pueden atacar a una distancia máxima de 2, moverse en una distancia de 3, tienen 5 puntos de daño y 10 puntos de vida, además Canserbero hace un daño de 7 puntos a todos que estén en el centro del laberinto y 1 punto por cada paso que des ahí y se regenera 2 punto de vida al terminar todos los turnos";
         }
     }
 }

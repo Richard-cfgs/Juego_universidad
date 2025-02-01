@@ -54,9 +54,9 @@ namespace Juego
         {
             for(int i=array.Length-1 ; i>0 ; i--)
             {
-                int a = array[i];
                 int b = ram.Next(0 , i+1);
-                array[i] = b;
+                int a = array[i];
+                array[i] = array[b];
                 array[b] = a;
             }
         }

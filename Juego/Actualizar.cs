@@ -18,7 +18,7 @@ namespace Juego
                         int jugador_muerto = Pcs.pcs[index_muerto].jugador;
                         foreach(int id_aliados in Turnos.players[Pcs.pcs[index_muerto].jugador])
                         {
-                            if(Pcs.pcs[id_aliados].jugador != jugador_muerto)Pcs.pcs[id_aliados].jugador = 0;
+                            if(Pcs.pcs[id_aliados].id != Pcs.pcs[index_muerto].id)Pcs.pcs[id_aliados].jugador = 0;
                         }
 //limpio la lista de sus aliados
                         Turnos.players[jugador_muerto].Clear();
@@ -39,17 +39,35 @@ namespace Juego
                         int y = Pcs.pcs[index_muerto].posy;
 //eliminar el pc de la lista
                         Pcs.pcs.RemoveAt(index_muerto);
-//agregar el pc creado nuevamente a la lista y le doy su vieja pos
-                        Pcs.inf_pcs(index_muerto , false);
-                        Pcs.pcs[index_muerto].posx = x;
-                        Pcs.pcs[index_muerto].posy = y;
-//lo agrego a la lista del que lo mató
-                        if(index_asesino != -1){
-                            Compilar.inf($"el héroe {Pcs.pcs[index_muerto].name} se ha unido al jugador {Pcs.pcs[index_asesino].jugador}" , "yellow");
+//si el asesino es canserbero elimino las pos viejas y creo el nuevo pc con pos aleatorias
+                        if(index_asesino == -2)
+                        {
+                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].id} ha sido derrotado por Canserbero" , "yellow");
+                            Thread.Sleep(3000);
+                            Pcs.inf_pcs(index_muerto , true);
+                            Pcs.pos_pcs[(x,y)].Remove(index_muerto);
+                        }
+//si el asesino es npc o trampa creo el pcs nuevamente elimino la posicion predeterminada y le doy la pos vieja
+                        if(index_asesino == -1)
+                        {
+                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].name} ha sido derrotado" , "yellow");
+                            Thread.Sleep(3000);
+                            Pcs.inf_pcs(index_muerto , false);
+                            Pcs.pos_pcs[(Pcs.pcs[index_muerto].posx,Pcs.pcs[index_muerto].posy)].Remove(index_muerto);
+                            Pcs.pcs[index_muerto].posx = x;
+                            Pcs.pcs[index_muerto].posy = y;
+                        }
+//si el asesino es un pc lo creo nuevamente, le elimino las pos viejas y lo agrego a la lista del que lo mató
+                        if(index_asesino >= 0){
+                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].name} se ha unido al jugador {Pcs.pcs[index_asesino].jugador}" , "yellow");
+                            Thread.Sleep(3000);
+                            Pcs.inf_pcs(index_muerto , false);
+                            Pcs.pos_pcs[(Pcs.pcs[index_muerto].posx,Pcs.pcs[index_muerto].posy)].Remove(index_muerto);
+                            Pcs.pcs[index_muerto].posx = x;
+                            Pcs.pcs[index_muerto].posy = y;
                             Turnos.players[Pcs.pcs[index_asesino].jugador].Add(index_muerto);
                             Pcs.pcs[index_muerto].jugador = Pcs.pcs[index_asesino].jugador;
                         }
-                        Pcs.pcs[index_muerto].jugador = 0;
                     }
                 }
             }
@@ -59,9 +77,6 @@ namespace Juego
                 {
 //eliminar el indice del npc de las pos de los npc              
                     Npcs.pos_npcs[(Npcs.npcs[index_muerto].posx,Npcs.npcs[index_muerto].posy)].Remove(index_muerto);
-//eliminar el npc de la lista
-                    Npcs.npcs.RemoveAt(index_muerto);
-                    Npcs.cant_npcs--;
                 }
             }
         }
@@ -69,13 +84,13 @@ namespace Juego
         {
             if(jugadores_muertos[jugador] > 1){
                 jugadores_muertos[jugador]--;
-                Compilar.inf($"jugador {jugador} herido, presiona Enter para continuar" , "yellow");
+                Compilar.inf($"Jugador {jugador} herido, presiona Enter para continuar" , "yellow");
                 continuar();
                 return 0;
             }
             else{
                 if(jugadores_muertos[jugador] == 1){
-                    Compilar.inf($"jugador {jugador} terminó de sanar, presiona Enter para continuar" , "yellow");
+                    Compilar.inf($"Jugador {jugador} terminó de sanar, presiona Enter para continuar" , "yellow");
                     continuar();
                     jugadores_muertos[jugador] = 0;
                     int index = Turnos.players[jugador][0];
@@ -117,6 +132,31 @@ namespace Juego
                         Pcs.pcs[id].affectedTurns = 0;
                     }    
                 }
+            }
+        }
+        public static void timesnpcs(int id)
+        {
+        if(Pcs.pcs[id].abilityTime > 1)Pcs.pcs[id].abilityTime--;
+            else
+            {
+                if(Pcs.pcs[id].abilityTime == 1)
+                {
+                    if(id == 3)Pcs.pcs[id].healthPoints /= 2;
+                    if(id == 4){Pcs.pcs[id].healthPoints -= 5; Pcs.pcs[id].attackPoints	-= 5; Pcs.pcs[id].speed -= 8;}
+                    Pcs.pcs[id].abilityTime = 0;
+                }
+                else if(Pcs.pcs[id].downTime > 0)Pcs.pcs[id].downTime--;
+            }
+            if(Pcs.pcs[id].affectedTurns > 1)Pcs.pcs[id].affectedTurns--;
+            else
+            {
+                if(Pcs.pcs[id].affectedTurns == 1)
+                {
+                    Pcs.pcs[id].healthPoints *= 2;
+                    Pcs.pcs[id].attackPoints *= 2;
+                    Pcs.pcs[id].speed *= 2;
+                    Pcs.pcs[id].affectedTurns = 0;
+                }    
             }
         }
         public static void tomar_pcs(int id)

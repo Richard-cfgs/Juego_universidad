@@ -2,7 +2,6 @@ namespace Juego
 {
     public class Turnos
     {
-        public static int speed;
         public static int cant_jugadores;
         public static int count_mov = 0;
         public static int personaje_en_juego = 0;
@@ -17,6 +16,11 @@ namespace Juego
 //recorro cada jugador       
                 personaje_en_juego = -1;   
                 count_mov = 0;   
+//rebajar tiempo a los pcs que usaron habilidades y dejaron de ser de algun jugador
+                for(int i=0 ; i<Pcs.cant_pcs ; i++)
+                {
+                    if(Pcs.pcs[i].jugador == 0)Actualizar.timesnpcs(i);
+                }
                 for(int i=1 ; i<=cant_jugadores ; i++){
                     Actualizar.times(i);
                     Compilar.compilar(0,0,0);
@@ -25,7 +29,7 @@ namespace Juego
 //verificar el uso de habilidades , el fin de los tiempos de habilidades y afectaciones por trampas
 //v es para que cada jugador pueda atacar una sola vez en su turno y llamo a la funcion que revisa que tipo de mov se ejecura
                         Compilar.compilar(0,0,0);
-                        v = Pcs.super_salto = false;
+                        v = false;
                         hacer_mov(i); 
                     }
                 }
@@ -33,18 +37,19 @@ namespace Juego
                 Compilar.inf("Se están moviendo los guardianes y héroes" , "blue");
                 Thread.Sleep(3000);
 //marcar para que cada npc ataque una sola vez
-                bool[] ya_atacaron = new bool[Npcs.cant_npcs];
-                Npcs.npcs_attack(ya_atacaron);
+                if(Canserbero.healthPoints_canserbero < 50)Canserbero.healthPoints_canserbero += 3;
+                if(Canserbero.healthPoints_canserbero > 50)Canserbero.healthPoints_canserbero = 50;
                 Npcs.mover_npcs();
-                Npcs.npcs_attack(ya_atacaron);
-                Canserbero.attack();
                 Pcs.caminar_pcs();
+                Canserbero.attack();
             }
         }
         public static void hacer_mov(int jugador)
         {
 //jugador elige el pc a mover
             int id = elegir_pc(jugador);
+//verificar si hay algun pc para tomar como aliado en la pos inicial
+            Actualizar.tomar_pcs(id);
 //hacer movimientos del pc en su velocidad +1 para poder recorrer por todas las opciones
             count_mov = 0;
             personaje_en_juego = id;
@@ -53,7 +58,8 @@ namespace Juego
 //hacer un mov , habilidad o ataque
                 while(true)
                 {
-                    Compilar.inf("presiona una tecla de movimiento, `Enter´ para usar la habilidad , `Barra Espaciadora´ para atacar o `Esc´ terminar turno" , "magenta");
+                    if(Pcs.pcs[id].jugador == 0)return;
+                    Compilar.inf("Haga un movimiento" , "magenta");
                     ConsoleKeyInfo tecla = Console.ReadKey(true);
 //ver si es una tecla de mov y si lo puedo hacer
                     int m = mov(tecla , id , count_mov);
@@ -71,6 +77,7 @@ namespace Juego
                         if(h == 1){
                             Console.Clear();
                             Compilar.compilar(0,0,0);
+                            if(id == 6 && Pcs.pcs[6].downTime != 0)return;
                             break;
                         }
                         if(h == 0){
@@ -111,18 +118,26 @@ namespace Juego
                 {
                     while(true)
                     {
-                        Compilar.inf("elige direccion para atacar o Esc para cancelar" , "magenta");
-                        ConsoleKeyInfo d = Console.ReadKey(true);
-                        int dx = 0 , dy = 0;
-                        if(d.Key == ConsoleKey.W || d.Key == ConsoleKey.UpArrow)dx--;
-                        if(d.Key == ConsoleKey.S || d.Key == ConsoleKey.DownArrow)dx++;
-                        if(d.Key == ConsoleKey.D || d.Key == ConsoleKey.RightArrow)dy++;
-                        if(d.Key == ConsoleKey.A || d.Key == ConsoleKey.LeftArrow)dy--;
-                        if(dx != 0 || dy != 0){
-                            recorrer_ataque(dx , dy , id);
+                        if(Pcs.pcs[id].range != 0)
+                        {
+                            Compilar.inf("elige direccion para atacar o Esc para cancelar" , "magenta");
+                            ConsoleKeyInfo d = Console.ReadKey(true);
+                            int dx = 0 , dy = 0;
+                            if(d.Key == ConsoleKey.W || d.Key == ConsoleKey.UpArrow)dx--;
+                            if(d.Key == ConsoleKey.S || d.Key == ConsoleKey.DownArrow)dx++;
+                            if(d.Key == ConsoleKey.D || d.Key == ConsoleKey.RightArrow)dy++;
+                            if(d.Key == ConsoleKey.A || d.Key == ConsoleKey.LeftArrow)dy--;
+                            if(dx != 0 || dy != 0){
+                                recorrer_ataque(dx , dy , id);
+                                return 1;
+                            }
+                            if(d.Key == ConsoleKey.Escape)return 2;
+                        }
+                        else
+                        {
+                            recorrer_ataque(0 , 0 , id);
                             return 1;
                         }
-                        if(d.Key == ConsoleKey.Escape)return 2;
                     }
                 }
                 else return 0;
@@ -148,6 +163,8 @@ namespace Juego
 //revisar si hay algun pc en esa posicion
                 if(Pcs.pos_pcs[(x,y)].Count != 0)
                 {
+                    int[] revisar = new int[8];
+                    int count = 0;
 //itero por todos los pc q hay
                     for(int j=0 ; j<Pcs.pos_pcs[(x,y)].Count ; j++)
                     {
@@ -156,9 +173,9 @@ namespace Juego
                         if(Pcs.pcs[index].jugador == Pcs.pcs[id].jugador)continue;
                         if(Pcs.pcs[index].jugador == 0)continue;
                         Pcs.pcs[index].healthPoints -= Pcs.pcs[id].attackPoints;
-//si la vida es cero mandarlo a la pos inicial y esperar durante 5 turnos
-                        Actualizar.revisar_muerto(index , true , id);
+                        revisar[count++] = index;
                     }
+                    for(int j=0 ; j<count ; j++)Actualizar.revisar_muerto(revisar[j] , true , id);
                 }
 //si hay npcs en la posicion hago lo mismo
                 if(Npcs.pos_npcs[(x,y)].Count != 0)
@@ -176,7 +193,7 @@ namespace Juego
         {
             if(tecla.Key == ConsoleKey.A || tecla.Key == ConsoleKey.D || tecla.Key == ConsoleKey.W || tecla.Key == ConsoleKey.S || tecla.Key == ConsoleKey.UpArrow || tecla.Key == ConsoleKey.DownArrow || tecla.Key == ConsoleKey.RightArrow || tecla.Key == ConsoleKey.LeftArrow)
             {
-                if(cant_mov_realizados == Pcs.pcs[id].speed)return 0;
+                if(cant_mov_realizados >= Pcs.pcs[id].speed)return 0;
                 else{
                     Pcs.pos_pcs[(Pcs.pcs[id].posx,Pcs.pcs[id].posy)].Remove(id);
                     int dx = 0, dy = 0;
@@ -192,7 +209,7 @@ namespace Juego
                         if(Pcs.pcs[id].posx+dx >= (Laberinto.size/2)-2 && Pcs.pcs[id].posx+dx <= (Laberinto.size/2)+2 && Pcs.pcs[id].posy+dy >= (Laberinto.size/2)-2 && Pcs.pcs[id].posy+dy <= (Laberinto.size/2)+2)
                         {
                             Pcs.pcs[id].healthPoints--;
-                            Actualizar.revisar_muerto(id , true , -1);
+                            Actualizar.revisar_muerto(id , true , -2);
                         }
                         return 1;
                     }
