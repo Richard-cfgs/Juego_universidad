@@ -28,16 +28,11 @@ namespace Juego
         }
         public static void revisar_muerto_canserbero(int id)
         {
-            Thread.Sleep(3000);
             if(healthPoints_canserbero <= 0){
                 Console.Clear();
-                int x = Console.WindowWidth/2;
-                Console.CursorLeft = x - 15;
                 AnsiConsole.Markup("[blue]EL JUGADOR [/]");
                 AnsiConsole.Markup($"[yellow]{Pcs.pcs[id].jugador} HA GANADO [/]");
                 AnsiConsole.Markup($"[blue]Y EL HÉROE VENCEOR FUE {Pcs.pcs[id].name} 🎇🎆🔥[/]");
-                Thread.Sleep(5000);
-                Console.WriteLine("\n\n\n\n\n");
                 Thread.Sleep(10000);
                 Environment.Exit(0);
             }
