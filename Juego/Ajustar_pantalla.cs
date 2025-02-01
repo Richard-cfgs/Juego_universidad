@@ -11,7 +11,7 @@ namespace Juego
             {
                 Console.Clear();
 //instrucciones
-                AnsiConsole.MarkupLine("[blue]Presione (Control) + (-) o (Control) + (+) para configurar el tamaño de la pantalla hasta poder ver los puntos amarrillos en las esquinas, presione cualquier tecla para actualizar o Enter para continuar.[/]");
+                AnsiConsole.MarkupLine("[blue]Presione (Control) + (-) o (Control) + (+) para configurar el tamaño de la pantalla hasta poder ver los puntos rojos en las esquinas, presione cualquier tecla para actualizar o Enter para continuar.[/]");
                 int largo = Console.WindowWidth;
                 int ancho = Console.WindowHeight;
 //puntos en las esquinas

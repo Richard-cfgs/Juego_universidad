@@ -41,7 +41,6 @@ namespace Juego
                 if(Canserbero.healthPoints_canserbero > 50)Canserbero.healthPoints_canserbero = 50;
                 Npcs.mover_npcs();
                 Pcs.caminar_pcs();
-                Canserbero.attack();
             }
         }
         public static void hacer_mov(int jugador)
