@@ -228,7 +228,7 @@ namespace Juego
                 {
                     heroes[i,1] = "Nación: Italia";
                     heroes[i,2] = "Descripción: Hombre lobo con un pasado oscuro y misterioso. Lucha por la libertad y la redención.";
-                    heroes[i,7] = "Habilidad Especial (A): Puede transformarse en lobo, aumentando su vida en 20, su ataque en 10 y su velocidad en 10.";
+                    heroes[i,7] = "Habilidad Especial (A): Puede transformarse en lobo, multiplicando su vida, ataque y velocidad por 2";
                 }
                 if(Pcs.pcs[i].name == "The Jumper Smith")
                 {

@@ -190,9 +190,9 @@ namespace Juego
                 pcs[id].downTime = pcs[id].downTimeOriginal;
             }
             if(id == 4){
-                pcs[id].healthPoints += 5;
-                pcs[id].attackPoints += 5;
-                pcs[id].speed += 6;
+                pcs[id].healthPoints *= 2;
+                pcs[id].attackPoints *= 2;
+                pcs[id].speed *= 2;
                 pcs[id].abilityTime = pcs[id].abilityTimeOriginal;
                 pcs[id].downTime = pcs[id].downTimeOriginal;
                 }

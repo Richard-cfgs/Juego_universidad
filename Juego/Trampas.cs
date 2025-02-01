@@ -28,6 +28,8 @@ namespace Juego
                     Pcs.pcs[iden_p].healthPoints /= 2;
                     Pcs.pcs[iden_p].attackPoints /= 2;
                     Pcs.pcs[iden_p].speed /= 2;
+                    if(Pcs.pcs[iden_p].speed == 0)Pcs.pcs[iden_p].speed = 1;
+                    if(Pcs.pcs[iden_p].attackPoints == 0)Pcs.pcs[iden_p].attackPoints = 1;
                     Pcs.pcs[iden_p].affectedTurns = 3;
                     Actualizar.revisar_muerto(iden_p , true , -1);
                 }

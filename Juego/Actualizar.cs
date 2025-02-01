@@ -42,15 +42,15 @@ namespace Juego
 //si el asesino es canserbero elimino las pos viejas y creo el nuevo pc con pos aleatorias
                         if(index_asesino == -2)
                         {
-                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].id} ha sido derrotado por Canserbero" , "yellow");
+                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].emoji} ha sido derrotado por Canserbero" , "yellow");
                             Thread.Sleep(3000);
                             Pcs.inf_pcs(index_muerto , true);
                             Pcs.pos_pcs[(x,y)].Remove(index_muerto);
                         }
 //si el asesino es npc o trampa creo el pcs nuevamente elimino la posicion predeterminada y le doy la pos vieja
-                        if(index_asesino == -1)
+                        if(index_asesino == -1 && index_asesino == 7)
                         {
-                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].name} ha sido derrotado" , "yellow");
+                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].emoji} ha sido derrotado" , "yellow");
                             Thread.Sleep(3000);
                             Pcs.inf_pcs(index_muerto , false);
                             Pcs.pos_pcs[(Pcs.pcs[index_muerto].posx,Pcs.pcs[index_muerto].posy)].Remove(index_muerto);
@@ -58,8 +58,8 @@ namespace Juego
                             Pcs.pcs[index_muerto].posy = y;
                         }
 //si el asesino es un pc lo creo nuevamente, le elimino las pos viejas y lo agrego a la lista del que lo mató
-                        if(index_asesino >= 0){
-                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].name} se ha unido al jugador {Pcs.pcs[index_asesino].jugador}" , "yellow");
+                        if(index_asesino >= 0 && index_asesino < 7){
+                            Compilar.inf($"El Héroe {Pcs.pcs[index_muerto].emoji} se ha unido al jugador {Pcs.pcs[index_asesino].jugador}" , "yellow");
                             Thread.Sleep(3000);
                             Pcs.inf_pcs(index_muerto , false);
                             Pcs.pos_pcs[(Pcs.pcs[index_muerto].posx,Pcs.pcs[index_muerto].posy)].Remove(index_muerto);
@@ -142,7 +142,11 @@ namespace Juego
                 if(Pcs.pcs[id].abilityTime == 1)
                 {
                     if(id == 3)Pcs.pcs[id].healthPoints /= 2;
-                    if(id == 4){Pcs.pcs[id].healthPoints -= 5; Pcs.pcs[id].attackPoints	-= 5; Pcs.pcs[id].speed -= 8;}
+                    if(id == 4){
+                        Pcs.pcs[id].healthPoints /= 2;
+                        Pcs.pcs[id].attackPoints /= 2;
+                        Pcs.pcs[id].speed /= 2;
+                        }
                     Pcs.pcs[id].abilityTime = 0;
                 }
                 else if(Pcs.pcs[id].downTime > 0)Pcs.pcs[id].downTime--;
@@ -161,6 +165,7 @@ namespace Juego
         }
         public static void tomar_pcs(int id)
         {
+            if(id == 7)return;
             foreach(int i in Pcs.pos_pcs[(Pcs.pcs[id].posx , Pcs.pcs[id].posy)])
             {
                 if(Pcs.pcs[i].jugador == 0 && Pcs.pcs[i].jugador != Pcs.pcs[id].jugador)
