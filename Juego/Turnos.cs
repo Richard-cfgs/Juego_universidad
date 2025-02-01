@@ -10,7 +10,6 @@ namespace Juego
 //funcion para ir llevando a cada jugador y lo que puede hacer
         public static void turnos()
         {
-            if(Canserbero.terminar == true)return;
             while(true)
             {
 //recorro cada jugador       

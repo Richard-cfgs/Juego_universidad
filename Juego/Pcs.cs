@@ -368,15 +368,6 @@ namespace Juego
                             pcs[i].posy = y;
                             pos_pcs[(pcs[i].posx,pcs[i].posy)].Add(i);
 //revisar si en la nueva pos hay algun jugador para unirse
-                            foreach(int id in pos_pcs[(x,y)])
-                            {
-                                if(pcs[id].jugador != 0)
-                                {
-                                    pcs[i].jugador = pcs[id].jugador;
-                                    Turnos.players[pcs[id].jugador].Add(i);
-                                    break;
-                                }
-                            }
                             break;
                         }
                     }

@@ -116,7 +116,7 @@ namespace Juego
                     if(Pcs.pcs[id].abilityTime == 1)
                     {
                         if(id == 3)Pcs.pcs[id].healthPoints /= 2;
-                        if(id == 4){Pcs.pcs[id].healthPoints -= 5; Pcs.pcs[id].attackPoints	-= 5; Pcs.pcs[id].speed -= 8;}
+                        if(id == 4){Pcs.pcs[id].healthPoints /= 2; Pcs.pcs[id].attackPoints	/= 2; Pcs.pcs[id].speed /= 2;}
                         Pcs.pcs[id].abilityTime = 0;
                     }
                     else if(Pcs.pcs[id].downTime > 0)Pcs.pcs[id].downTime--;
